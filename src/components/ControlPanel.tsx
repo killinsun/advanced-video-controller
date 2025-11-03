@@ -1,10 +1,23 @@
+import { useState, useEffect } from 'react';
 import type { FrameController } from '@/utils/frame-controller';
+import { parseTimeString } from '@/utils/time-parser';
 
 interface ControlPanelProps {
   controller: FrameController;
 }
 
 export function ControlPanel({ controller }: ControlPanelProps) {
+  const [timeInput, setTimeInput] = useState('');
+  const [isPaused, setIsPaused] = useState(controller.isPaused());
+
+  // プレーヤーの状態を監視
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsPaused(controller.isPaused());
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [controller]);
   const buttonStyle: React.CSSProperties = {
     padding: '8px 16px',
     margin: '0 4px',
@@ -27,8 +40,55 @@ export function ControlPanel({ controller }: ControlPanelProps) {
     marginTop: '8px',
   };
 
+  const inputStyle: React.CSSProperties = {
+    padding: '8px 12px',
+    backgroundColor: '#222',
+    color: '#fff',
+    border: '1px solid #555',
+    borderRadius: '8px',
+    fontSize: '14px',
+    width: '100px',
+  };
+
+  const jumpButtonStyle: React.CSSProperties = {
+    ...buttonStyle,
+    backgroundColor: '#1a5490',
+  };
+
+  const handleJumpTo = () => {
+    const seconds = parseTimeString(timeInput);
+    if (seconds !== null) {
+      controller.seekTo(seconds);
+      setTimeInput(''); // 入力をクリア
+    } else {
+      alert('無効な時間形式です。例: 1:30 または 1:15:30');
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleJumpTo();
+    }
+  };
+
   return (
     <div style={containerStyle}>
+      <button
+        style={buttonStyle}
+        onClick={() => controller.togglePlayPause()}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = '#444';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = '#333';
+        }}
+        title={isPaused ? '再生' : '一時停止'}
+      >
+        {isPaused ? '▶' : '⏸'}
+      </button>
+
+      <span style={{ color: '#888', fontSize: '14px' }}>|</span>
+
       <button
         style={buttonStyle}
         onClick={() => controller.skip(-1)}
@@ -53,6 +113,30 @@ export function ControlPanel({ controller }: ControlPanelProps) {
         }}
       >
         +1
+      </button>
+
+      <span style={{ color: '#888', fontSize: '14px' }}>|</span>
+
+      <input
+        type="text"
+        style={inputStyle}
+        placeholder="1:30"
+        value={timeInput}
+        onChange={(e) => setTimeInput(e.target.value)}
+        onKeyPress={handleKeyPress}
+      />
+
+      <button
+        style={jumpButtonStyle}
+        onClick={handleJumpTo}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = '#2563a8';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = '#1a5490';
+        }}
+      >
+        移動
       </button>
     </div>
   );

@@ -79,4 +79,36 @@ export class FrameController {
   getDuration(): number {
     return this.player.duration();
   }
+
+  /**
+   * 再生
+   */
+  play(): void {
+    this.player.play();
+  }
+
+  /**
+   * 一時停止
+   */
+  pause(): void {
+    this.player.pause();
+  }
+
+  /**
+   * 再生/一時停止をトグル
+   */
+  togglePlayPause(): void {
+    if (this.player.paused()) {
+      this.player.play();
+    } else {
+      this.player.pause();
+    }
+  }
+
+  /**
+   * 一時停止中かどうか
+   */
+  isPaused(): boolean {
+    return this.player.paused();
+  }
 }

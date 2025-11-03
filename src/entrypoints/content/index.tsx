@@ -39,8 +39,8 @@ export default defineContentScript({
  * コントロールパネルUIをマウント
  */
 function mountControlPanel(frameController: FrameController): void {
-  // PlayerInner_controllerContainer__で始まるクラスを持つ要素を探す
-  const controllerContainer = document.querySelector('[class*="PlayerInner_controllerContainer__"]');
+  // QualityPanel_qualityPaneで始まるクラスを持つ要素を探す
+  const controllerContainer = document.querySelector('[class*="PlayerInner_qualityPanel__"]');
   if (!controllerContainer) {
     console.error('[AVC] Controller container not found');
     return;
@@ -51,8 +51,8 @@ function mountControlPanel(frameController: FrameController): void {
   uiContainer.id = 'avc-control-panel';
   uiContainer.style.width = '100%';
 
-  // controllerContainerの直前に挿入
-  controllerContainer.parentElement?.insertBefore(uiContainer, controllerContainer);
+  // controllerContainerの直後に挿入
+  controllerContainer.parentElement?.insertAdjacentElement('afterend', uiContainer);
 
   // Reactコンポーネントをマウント
   const root = ReactDOM.createRoot(uiContainer);
