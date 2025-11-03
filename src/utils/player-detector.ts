@@ -30,10 +30,6 @@ export async function detectVideoJsPlayer(): Promise<VideoJsPlayer> {
   const { maxRetries, retryDelay } = DETECTION_CONFIG;
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    if (attempt === 1) {
-      console.log('[AVC] Starting player detection...');
-    }
-
     // 方法1: グローバルのvideojsが利用可能か確認
     if (typeof window.videojs !== 'undefined') {
       const players = window.videojs.getPlayers();
@@ -42,8 +38,6 @@ export async function detectVideoJsPlayer(): Promise<VideoJsPlayer> {
       if (playerIds.length > 0) {
         const playerId = playerIds[0];
         const player = players[playerId];
-
-        console.log(`[AVC] ✓ Player detected: ${playerId}`);
         return player;
       }
     }
@@ -53,14 +47,12 @@ export async function detectVideoJsPlayer(): Promise<VideoJsPlayer> {
     for (const videoEl of videoElements) {
       const element = videoEl as any;
       if (element._videoJs) {
-        console.log('[AVC] ✓ Player detected via video._videoJs');
         return element._videoJs;
       }
 
       // 親要素も確認
       const parent = videoEl.parentElement as any;
       if (parent?._videoJs) {
-        console.log('[AVC] ✓ Player detected via parent._videoJs');
         return parent._videoJs;
       }
     }
@@ -72,16 +64,12 @@ export async function detectVideoJsPlayer(): Promise<VideoJsPlayer> {
     for (const el of playerElements) {
       const element = el as any;
       if (element._videoJs) {
-        console.log('[AVC] ✓ Player detected via element._videoJs');
         return element._videoJs;
       }
     }
 
     // リトライ待機
     if (attempt < maxRetries) {
-      if (attempt % 5 === 0) {
-        console.log(`[AVC] Still detecting... (${attempt}/${maxRetries})`);
-      }
       await sleep(retryDelay);
     }
   }
@@ -117,12 +105,9 @@ export async function waitForPlayerReady(player: VideoJsPlayer): Promise<void> {
 
     // durationが有効な値（NaNでない、0より大きい）なら準備完了
     if (!isNaN(duration) && duration > 0) {
-      console.log(`[AVC] ✓ Player ready (duration: ${duration.toFixed(2)}s)`);
       return;
     }
 
     await sleep(checkInterval);
   }
-
-  console.warn('[AVC] ⚠ Player ready timeout, but continuing...');
 }
