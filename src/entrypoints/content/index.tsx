@@ -1,5 +1,7 @@
+import ReactDOM from 'react-dom/client';
 import { detectVideoJsPlayer, waitForPlayerReady } from '@/utils/player-detector';
 import { FrameController } from '@/utils/frame-controller';
+import { ControlPanel } from '@/components/ControlPanel';
 
 export default defineContentScript({
   matches: ['https://basketball.mb.softbank.jp/lives/*'],
@@ -22,15 +24,42 @@ export default defineContentScript({
       // キーボードショートカットを設定
       setupKeyboardShortcuts(frameController);
 
-      console.log('[AVC] ✓ Ready (← / →: 1s skip, Shift + ← / →: 0.5s skip)');
+      // UIをマウント
+      mountControlPanel(frameController);
 
-      // TODO: Phase 5でUIを追加
+      console.log('[AVC] ✓ Ready (← / →: 1s skip, Shift + ← / →: 0.5s skip)');
 
     } catch (error) {
       console.error('[AVC] ✗ Initialization failed:', error);
     }
   },
 });
+
+/**
+ * コントロールパネルUIをマウント
+ */
+function mountControlPanel(frameController: FrameController): void {
+  // PlayerInner_controllerContainer__で始まるクラスを持つ要素を探す
+  const controllerContainer = document.querySelector('[class*="PlayerInner_controllerContainer__"]');
+  if (!controllerContainer) {
+    console.error('[AVC] Controller container not found');
+    return;
+  }
+
+  // UIコンテナを作成
+  const uiContainer = document.createElement('div');
+  uiContainer.id = 'avc-control-panel';
+  uiContainer.style.width = '100%';
+
+  // controllerContainerの直前に挿入
+  controllerContainer.parentElement?.insertBefore(uiContainer, controllerContainer);
+
+  // Reactコンポーネントをマウント
+  const root = ReactDOM.createRoot(uiContainer);
+  root.render(<ControlPanel controller={frameController} />);
+
+  console.log('[AVC] Control panel mounted');
+}
 
 /**
  * キーボードショートカットを設定
