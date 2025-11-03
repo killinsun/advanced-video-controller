@@ -4,11 +4,13 @@ import { parseTimeString } from '@/utils/time-parser';
 
 interface ControlPanelProps {
   controller: FrameController;
+  initialTime?: number | null;
 }
 
-export function ControlPanel({ controller }: ControlPanelProps) {
-  const [timeInput, setTimeInput] = useState('');
+export function ControlPanel({ controller, initialTime }: ControlPanelProps) {
+  const [timeInput, setTimeInput] = useState(initialTime !== null && initialTime !== undefined ? String(initialTime) : '');
   const [isPaused, setIsPaused] = useState(controller.isPaused());
+  const [errorText, setErrorText] = useState('');
 
   // プレーヤーの状態を監視
   useEffect(() => {
@@ -59,9 +61,9 @@ export function ControlPanel({ controller }: ControlPanelProps) {
     const seconds = parseTimeString(timeInput);
     if (seconds !== null) {
       controller.seekTo(seconds);
-      setTimeInput(''); // 入力をクリア
+      setErrorText('');
     } else {
-      alert('無効な時間形式です。例: 1:30 または 1:15:30');
+      setErrorText('無効な時間形式です。例: 1:30 または 1:15:30');
     }
   };
 
@@ -72,6 +74,7 @@ export function ControlPanel({ controller }: ControlPanelProps) {
   };
 
   return (
+    <div className="wrapper">
     <div style={containerStyle}>
       <button
         style={buttonStyle}
@@ -138,6 +141,8 @@ export function ControlPanel({ controller }: ControlPanelProps) {
       >
         移動
       </button>
+    </div>
+    {errorText && <p style={{ color: '#f00', fontSize: '12px', marginTop: '4px' }}>{errorText}</p>}
     </div>
   );
 }

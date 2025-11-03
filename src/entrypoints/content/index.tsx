@@ -2,11 +2,12 @@ import ReactDOM from 'react-dom/client';
 import { detectVideoJsPlayer, waitForPlayerReady } from '@/utils/player-detector';
 import { FrameController } from '@/utils/frame-controller';
 import { ControlPanel } from '@/components/ControlPanel';
+import { getStartTimeFromUrl } from '@/utils/url-params';
 
 export default defineContentScript({
   matches: ['https://basketball.mb.softbank.jp/lives/*'],
-  runAt: 'document_idle', // ページ読み込み完了後に実行
-  world: 'MAIN', // ページのJavaScriptコンテキストで実行（window.videojsにアクセス可能）
+  runAt: 'document_idle',
+  world: 'MAIN',
 
   async main() {
     console.log('[AVC] Advanced Video Controller initialized');
@@ -21,11 +22,17 @@ export default defineContentScript({
       // FrameControllerを初期化
       const frameController = new FrameController(player, 30);
 
+      // URLパラメーターから開始時間を取得
+      const startTime = getStartTimeFromUrl();
+      if (startTime !== null) {
+        console.log(`[AVC] URL parameter t=${startTime} detected, pre-filling time input`);
+      }
+
       // キーボードショートカットを設定
       setupKeyboardShortcuts(frameController);
 
-      // UIをマウント
-      mountControlPanel(frameController);
+      // UIをマウント（startTimeを渡す）
+      mountControlPanel(frameController, startTime);
 
       console.log('[AVC] ✓ Ready (← / →: 1s skip, Shift + ← / →: 0.5s skip)');
 
@@ -38,7 +45,7 @@ export default defineContentScript({
 /**
  * コントロールパネルUIをマウント
  */
-function mountControlPanel(frameController: FrameController): void {
+function mountControlPanel(frameController: FrameController, initialTime?: number | null): void {
   // QualityPanel_qualityPaneで始まるクラスを持つ要素を探す
   const controllerContainer = document.querySelector('[class*="PlayerInner_qualityPanel__"]');
   if (!controllerContainer) {
@@ -56,7 +63,7 @@ function mountControlPanel(frameController: FrameController): void {
 
   // Reactコンポーネントをマウント
   const root = ReactDOM.createRoot(uiContainer);
-  root.render(<ControlPanel controller={frameController} />);
+  root.render(<ControlPanel controller={frameController} initialTime={initialTime} />);
 
   console.log('[AVC] Control panel mounted');
 }
