@@ -3,6 +3,7 @@ import { EditorView } from './EditorView';
 import { JsonView } from './JsonView';
 
 interface ReviewSidebarProps {
+  player: any; // Video.js player
   onClose: () => void;
 }
 
@@ -78,7 +79,7 @@ const styles = {
   } as CSSProperties,
 };
 
-export function ReviewSidebar({ onClose }: ReviewSidebarProps) {
+export function ReviewSidebar({ player, onClose }: ReviewSidebarProps) {
   const [activeTab, setActiveTab] = useState<'editor' | 'json'>('editor');
 
   return (
@@ -147,7 +148,7 @@ export function ReviewSidebar({ onClose }: ReviewSidebarProps) {
 
       {/* コンテンツエリア */}
       <div style={styles.content}>
-        {activeTab === 'editor' ? <EditorView /> : <JsonView />}
+        {activeTab === 'editor' ? <EditorView player={player} /> : <JsonView />}
       </div>
     </div>
   );
