@@ -1,4 +1,4 @@
-import { useState, CSSProperties } from 'react';
+import { useState, CSSProperties, useEffect, useRef } from 'react';
 import { CommentRecord } from '@/types/game-review';
 
 interface RecordItemProps {
@@ -68,6 +68,11 @@ const styles = {
     resize: 'vertical',
     fontFamily: 'inherit',
     boxSizing: 'border-box',
+    outline: 'none',
+  } as CSSProperties,
+  textareaFocus: {
+    borderColor: '#3b82f6',
+    boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)',
   } as CSSProperties,
   commentText: {
     fontSize: '13px',
@@ -90,6 +95,10 @@ const styles = {
     fontSize: '13px',
     fontWeight: '600',
     transition: 'all 0.2s',
+    outline: 'none',
+  } as CSSProperties,
+  homeAwayButtonFocus: {
+    boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.3)',
   } as CSSProperties,
   homeButtonActive: {
     backgroundColor: '#3b82f6',
@@ -106,6 +115,15 @@ const styles = {
 export function RecordItem({ record, isConfirmed, onUpdate, onConfirm, onDelete }: RecordItemProps) {
   const [comment, setComment] = useState(record.comment);
   const [homeAway, setHomeAway] = useState<'HOME' | 'AWAY'>(record.homeAway);
+  const [isFocused, setIsFocused] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // 編集中レコードが作成されたら自動フォーカス
+  useEffect(() => {
+    if (!isConfirmed && textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, [isConfirmed]);
 
   const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newComment = e.target.value;
@@ -174,10 +192,16 @@ export function RecordItem({ record, isConfirmed, onUpdate, onConfirm, onDelete 
 
       {/* コメント入力 */}
       <textarea
-        style={styles.textarea}
+        ref={textareaRef}
+        style={{
+          ...styles.textarea,
+          ...(isFocused ? styles.textareaFocus : {}),
+        }}
         placeholder="コメントを入力..."
         value={comment}
         onChange={handleCommentChange}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
       />
 
       {/* HOME/AWAYボタン */}
@@ -198,6 +222,12 @@ export function RecordItem({ record, isConfirmed, onUpdate, onConfirm, onDelete 
               e.currentTarget.style.backgroundColor = 'white';
             }
           }}
+          onFocus={(e) => {
+            e.currentTarget.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.3)';
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.boxShadow = 'none';
+          }}
         >
           HOME
         </button>
@@ -216,6 +246,12 @@ export function RecordItem({ record, isConfirmed, onUpdate, onConfirm, onDelete 
             if (homeAway !== 'AWAY') {
               e.currentTarget.style.backgroundColor = 'white';
             }
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.3)';
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.boxShadow = 'none';
           }}
         >
           AWAY

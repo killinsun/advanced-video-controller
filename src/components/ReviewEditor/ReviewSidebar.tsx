@@ -16,12 +16,13 @@ const styles = {
     boxShadow: '-4px 0 16px rgba(0, 0, 0, 0.1)',
     display: 'flex',
     flexDirection: 'column',
+    gap: '8px',
   } as CSSProperties,
   header: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: '16px',
+    padding: '8px 16px',
     borderBottom: '1px solid #e5e7eb',
   } as CSSProperties,
   title: {
@@ -77,11 +78,57 @@ const styles = {
     flex: 1,
     overflowY: 'auto',
     padding: '16px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+    position: 'relative',
+  } as CSSProperties,
+  periodTab: {
+    flex: 1,
+    padding: '12px',
+    fontSize: '14px',
+    fontWeight: '600',
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    transition: 'color 0.2s',
+    position: 'relative',
+  } as CSSProperties,
+  periodTabActive: {
+    color: '#2563eb',
+  } as CSSProperties,
+  periodTabInactive: {
+    color: '#6b7280',
+  } as CSSProperties,
+  switcher: {
+    display: 'inline-flex',
+    backgroundColor: '#f3f4f6',
+    borderRadius: '4px',
+    padding: '2px',
+    gap: '2px',
+    alignSelf: 'flex-end',
+  } as CSSProperties,
+  switcherButton: {
+    padding: '4px 10px',
+    fontSize: '11px',
+    fontWeight: '500',
+    border: 'none',
+    borderRadius: '3px',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+    backgroundColor: 'transparent',
+    color: '#6b7280',
+  } as CSSProperties,
+  switcherButtonActive: {
+    backgroundColor: 'white',
+    color: '#374151',
+    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
   } as CSSProperties,
 };
 
 export function ReviewSidebar({ player, onClose }: ReviewSidebarProps) {
-  const [activeTab, setActiveTab] = useState<'editor' | 'json'>('editor');
+  const [selectedPeriod, setSelectedPeriod] = useState<Period>('1');
+  const [viewMode, setViewMode] = useState<'editor' | 'json'>('editor');
   const [records, setRecords] = useState<Record<Period, CommentRecord[]>>({
     '1': [],
     '2': [],
@@ -119,54 +166,65 @@ export function ReviewSidebar({ player, onClose }: ReviewSidebarProps) {
         </button>
       </div>
 
-      {/* タブ */}
+      <div style={styles.switcher}>
+        <button
+          style={{
+            ...styles.switcherButton,
+            ...(viewMode === 'editor' ? styles.switcherButtonActive : {}),
+          }}
+          onClick={() => setViewMode('editor')}
+        >
+          📝 エディタ
+        </button>
+        <button
+          style={{
+            ...styles.switcherButton,
+            ...(viewMode === 'json' ? styles.switcherButtonActive : {}),
+          }}
+          onClick={() => setViewMode('json')}
+        >
+          📋 JSON
+        </button>
+      </div>
+
+
+      {/* クォータータブ */}
       <div style={styles.tabContainer}>
-        <button
-          style={{
-            ...styles.tab,
-            ...(activeTab === 'editor' ? styles.tabActive : styles.tabInactive),
-          }}
-          onClick={() => setActiveTab('editor')}
-          onMouseEnter={(e) => {
-            if (activeTab !== 'editor') {
-              e.currentTarget.style.color = '#1f2937';
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (activeTab !== 'editor') {
-              e.currentTarget.style.color = '#6b7280';
-            }
-          }}
-        >
-          エディタ
-          {activeTab === 'editor' && <div style={styles.tabBorder} />}
-        </button>
-        <button
-          style={{
-            ...styles.tab,
-            ...(activeTab === 'json' ? styles.tabActive : styles.tabInactive),
-          }}
-          onClick={() => setActiveTab('json')}
-          onMouseEnter={(e) => {
-            if (activeTab !== 'json') {
-              e.currentTarget.style.color = '#1f2937';
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (activeTab !== 'json') {
-              e.currentTarget.style.color = '#6b7280';
-            }
-          }}
-        >
-          JSON
-          {activeTab === 'json' && <div style={styles.tabBorder} />}
-        </button>
+        {(['1', '2', '3', '4'] as Period[]).map((period) => (
+          <button
+            key={period}
+            style={{
+              ...styles.periodTab,
+              ...(selectedPeriod === period ? styles.periodTabActive : styles.periodTabInactive),
+            }}
+            onClick={() => setSelectedPeriod(period)}
+            onMouseEnter={(e) => {
+              if (selectedPeriod !== period) {
+                e.currentTarget.style.color = '#1f2937';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (selectedPeriod !== period) {
+                e.currentTarget.style.color = '#6b7280';
+              }
+            }}
+          >
+            {period}Q
+            {selectedPeriod === period && <div style={styles.tabBorder} />}
+          </button>
+        ))}
       </div>
 
       {/* コンテンツエリア */}
       <div style={styles.content}>
-        {activeTab === 'editor' ? (
-          <EditorView player={player} records={records} setRecords={setRecords} />
+        {/* コンテンツ */}
+        {viewMode === 'editor' ? (
+          <EditorView
+            player={player}
+            selectedPeriod={selectedPeriod}
+            records={records}
+            setRecords={setRecords}
+          />
         ) : (
           <JsonView gameReview={gameReview} />
         )}

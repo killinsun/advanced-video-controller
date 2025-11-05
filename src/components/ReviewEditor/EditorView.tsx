@@ -4,6 +4,7 @@ import { Period, CommentRecord } from '@/types/game-review';
 
 interface EditorViewProps {
   player: any; // Video.js player
+  selectedPeriod: Period;
   records: Record<Period, CommentRecord[]>;
   setRecords: Dispatch<SetStateAction<Record<Period, CommentRecord[]>>>;
 }
@@ -13,26 +14,7 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     gap: '16px',
-  } as CSSProperties,
-  periodContainer: {
-    display: 'flex',
-    gap: '8px',
-  } as CSSProperties,
-  periodButton: {
     flex: 1,
-    padding: '10px',
-    border: '2px solid #e5e7eb',
-    borderRadius: '6px',
-    backgroundColor: 'white',
-    cursor: 'pointer',
-    fontSize: '14px',
-    fontWeight: '600',
-    transition: 'all 0.2s',
-  } as CSSProperties,
-  periodButtonActive: {
-    backgroundColor: '#3b82f6',
-    color: 'white',
-    borderColor: '#3b82f6',
   } as CSSProperties,
   captureButton: {
     width: '100%',
@@ -63,8 +45,7 @@ interface EditingRecord extends CommentRecord {
   isConfirmed: boolean;
 }
 
-export function EditorView({ player, records, setRecords }: EditorViewProps) {
-  const [selectedPeriod, setSelectedPeriod] = useState<Period>('1');
+export function EditorView({ player, selectedPeriod, records, setRecords }: EditorViewProps) {
   const [editingRecords, setEditingRecords] = useState<EditingRecord[]>([]);
 
   const captureTime = () => {
@@ -119,32 +100,6 @@ export function EditorView({ player, records, setRecords }: EditorViewProps) {
 
   return (
     <div style={styles.container}>
-      {/* クォーター選択 */}
-      <div style={styles.periodContainer}>
-        {(['1', '2', '3', '4'] as Period[]).map((period) => (
-          <button
-            key={period}
-            style={{
-              ...styles.periodButton,
-              ...(selectedPeriod === period ? styles.periodButtonActive : {}),
-            }}
-            onClick={() => setSelectedPeriod(period)}
-            onMouseEnter={(e) => {
-              if (selectedPeriod !== period) {
-                e.currentTarget.style.backgroundColor = '#f3f4f6';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (selectedPeriod !== period) {
-                e.currentTarget.style.backgroundColor = 'white';
-              }
-            }}
-          >
-            {period}Q
-          </button>
-        ))}
-      </div>
-
       {/* 時間記録ボタン */}
       <button
         style={styles.captureButton}
