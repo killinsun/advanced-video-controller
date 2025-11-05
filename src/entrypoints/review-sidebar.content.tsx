@@ -47,16 +47,14 @@ function ReviewApp({ player }: ReviewAppProps) {
       </button>
 
       {/* サイドバー */}
-      {isVisible && (
         <div
           style={{
-            width: '384px',
+            width: isVisible ? '384px' : '0',
             flexShrink: 0,
           }}
         >
           <ReviewSidebar player={player} onClose={() => setIsVisible(false)} />
         </div>
-      )}
     </>
   );
 }
