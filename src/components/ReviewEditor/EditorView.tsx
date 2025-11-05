@@ -1,4 +1,5 @@
 import { useState, CSSProperties } from 'react';
+import { RecordItem } from './RecordItem';
 
 type Period = '1' | '2' | '3' | '4';
 
@@ -56,18 +57,6 @@ const styles = {
     flexDirection: 'column',
     gap: '8px',
   } as CSSProperties,
-  recordItem: {
-    padding: '12px',
-    backgroundColor: '#f9fafb',
-    borderRadius: '6px',
-    border: '1px solid #e5e7eb',
-  } as CSSProperties,
-  recordTime: {
-    fontSize: '14px',
-    fontWeight: '600',
-    color: '#374151',
-    fontFamily: 'monospace',
-  } as CSSProperties,
   emptyState: {
     textAlign: 'center',
     color: '#9ca3af',
@@ -106,10 +95,18 @@ export function EditorView({ player }: EditorViewProps) {
     console.log(`[AVC Review] Time captured: ${currentTime}s in ${selectedPeriod}Q`);
   };
 
-  const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  const updateRecord = (index: number, updated: CommentRecord) => {
+    setRecords((prev) => ({
+      ...prev,
+      [selectedPeriod]: prev[selectedPeriod].map((r, i) => (i === index ? updated : r)),
+    }));
+  };
+
+  const deleteRecord = (index: number) => {
+    setRecords((prev) => ({
+      ...prev,
+      [selectedPeriod]: prev[selectedPeriod].filter((_, i) => i !== index),
+    }));
   };
 
   const currentRecords = records[selectedPeriod];
@@ -168,9 +165,12 @@ export function EditorView({ player }: EditorViewProps) {
           </div>
         ) : (
           currentRecords.map((record, index) => (
-            <div key={index} style={styles.recordItem}>
-              <div style={styles.recordTime}>{formatTime(record.videoSec)}</div>
-            </div>
+            <RecordItem
+              key={index}
+              record={record}
+              onUpdate={(updated) => updateRecord(index, updated)}
+              onDelete={() => deleteRecord(index)}
+            />
           ))
         )}
       </div>
