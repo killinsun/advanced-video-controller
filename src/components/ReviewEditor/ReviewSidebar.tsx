@@ -1,6 +1,7 @@
 import { useState, CSSProperties } from 'react';
 import { EditorView } from './EditorView';
 import { JsonView } from './JsonView';
+import { Period, CommentRecord, GameReview } from '@/types/game-review';
 
 interface ReviewSidebarProps {
   player: any; // Video.js player
@@ -81,6 +82,22 @@ const styles = {
 
 export function ReviewSidebar({ player, onClose }: ReviewSidebarProps) {
   const [activeTab, setActiveTab] = useState<'editor' | 'json'>('editor');
+  const [records, setRecords] = useState<Record<Period, CommentRecord[]>>({
+    '1': [],
+    '2': [],
+    '3': [],
+    '4': [],
+  });
+  const [gameInfo, setGameInfo] = useState({
+    gameId: '',
+    homeTeamName: '',
+    awayTeamName: '',
+  });
+
+  const gameReview: GameReview = {
+    ...gameInfo,
+    periods: records,
+  };
 
   return (
     <div style={styles.container}>
@@ -148,7 +165,11 @@ export function ReviewSidebar({ player, onClose }: ReviewSidebarProps) {
 
       {/* コンテンツエリア */}
       <div style={styles.content}>
-        {activeTab === 'editor' ? <EditorView player={player} /> : <JsonView />}
+        {activeTab === 'editor' ? (
+          <EditorView player={player} records={records} setRecords={setRecords} />
+        ) : (
+          <JsonView gameReview={gameReview} />
+        )}
       </div>
     </div>
   );

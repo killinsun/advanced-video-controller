@@ -1,15 +1,11 @@
 import { useState, CSSProperties } from 'react';
-
-interface CommentRecord {
-  videoSec: number;
-  restGameClock?: string;
-  comment: string;
-  homeAway: 'HOME' | 'AWAY';
-}
+import { CommentRecord } from '@/types/game-review';
 
 interface RecordItemProps {
   record: CommentRecord;
+  isConfirmed: boolean;
   onUpdate: (updated: CommentRecord) => void;
+  onConfirm: (confirmed: CommentRecord) => void;
   onDelete: () => void;
 }
 
@@ -107,10 +103,9 @@ const styles = {
   } as CSSProperties,
 };
 
-export function RecordItem({ record, onUpdate, onDelete }: RecordItemProps) {
+export function RecordItem({ record, isConfirmed, onUpdate, onConfirm, onDelete }: RecordItemProps) {
   const [comment, setComment] = useState(record.comment);
   const [homeAway, setHomeAway] = useState<'HOME' | 'AWAY'>(record.homeAway);
-  const [isConfirmed, setIsConfirmed] = useState(false);
 
   const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newComment = e.target.value;
@@ -120,8 +115,12 @@ export function RecordItem({ record, onUpdate, onDelete }: RecordItemProps) {
 
   const handleHomeAwayChange = (value: 'HOME' | 'AWAY') => {
     setHomeAway(value);
-    setIsConfirmed(true);
-    onUpdate({ ...record, homeAway: value });
+    const confirmedRecord: CommentRecord = {
+      ...record,
+      comment,
+      homeAway: value,
+    };
+    onConfirm(confirmedRecord);
   };
 
   const formatTime = (seconds: number): string => {
