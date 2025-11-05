@@ -4,6 +4,7 @@ import { FrameController } from '@/utils/frame-controller';
 import { ControlPanel } from '@/components/ControlPanel';
 import { getStartTimeFromUrl } from '@/utils/url-params';
 
+
 export default defineContentScript({
   matches: ['https://basketball.mb.softbank.jp/lives/*'],
   runAt: 'document_idle',
