@@ -146,6 +146,31 @@ export function ReviewSidebar({ player, onClose }: ReviewSidebarProps) {
     periods: records,
   };
 
+  const handleImport = (imported: GameReview) => {
+    // periodsのデータを確実に初期化し、不要なプロパティを除外
+    const cleanRecord = (record: any): CommentRecord => ({
+      videoSec: record.videoSec,
+      comment: record.comment,
+      homeAway: record.homeAway,
+      ...(record.restGameClock ? { restGameClock: record.restGameClock } : {}),
+    });
+
+    const importedPeriods: Record<Period, CommentRecord[]> = {
+      '1': (imported.periods['1'] || []).map(cleanRecord),
+      '2': (imported.periods['2'] || []).map(cleanRecord),
+      '3': (imported.periods['3'] || []).map(cleanRecord),
+      '4': (imported.periods['4'] || []).map(cleanRecord),
+    };
+
+    setRecords(importedPeriods);
+    setGameInfo({
+      gameId: imported.gameId || '',
+      homeTeamName: imported.homeTeamName || '',
+      awayTeamName: imported.awayTeamName || '',
+    });
+    console.log('[AVC Review] Data imported successfully', importedPeriods);
+  };
+
   return (
     <div style={styles.container}>
       {/* ヘッダー */}
@@ -189,7 +214,12 @@ export function ReviewSidebar({ player, onClose }: ReviewSidebarProps) {
 
 
       {/* クォータータブ */}
-      <div style={styles.tabContainer}>
+      <div style={
+        {
+          ...styles.tabContainer,
+          ...(viewMode === 'editor' ? { display: 'flex' } : { display: 'none' }),
+        }
+      }>
         {(['1', '2', '3', '4'] as Period[]).map((period) => (
           <button
             key={period}
@@ -226,7 +256,7 @@ export function ReviewSidebar({ player, onClose }: ReviewSidebarProps) {
             setRecords={setRecords}
           />
         ) : (
-          <JsonView gameReview={gameReview} />
+          <JsonView gameReview={gameReview} onImport={handleImport} />
         )}
       </div>
     </div>
