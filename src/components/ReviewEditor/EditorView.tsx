@@ -95,6 +95,13 @@ export function EditorView({ player, selectedPeriod, records, setRecords }: Edit
     }));
   };
 
+  const handleTimeClick = (videoSec: number) => {
+    if (player) {
+      player.currentTime(videoSec);
+      console.log(`[AVC Review] Seeked to ${videoSec}s`);
+    }
+  };
+
   const confirmedRecords = records[selectedPeriod];
   const allRecords = [...editingRecords, ...confirmedRecords];
 
@@ -131,10 +138,10 @@ export function EditorView({ player, selectedPeriod, records, setRecords }: Edit
               <RecordItem
                 key={`confirmed-${index}`}
                 record={record}
-                isConfirmed={true}
                 onUpdate={() => {}} // 確定済みは更新不可
                 onConfirm={() => {}} // 確定済みは再確定不可
                 onDelete={() => deleteConfirmedRecord(index)}
+                onTimeClick={() => handleTimeClick(record.videoSec)}
               />
             ))}
             {/* 編集中レコード */}
@@ -142,7 +149,6 @@ export function EditorView({ player, selectedPeriod, records, setRecords }: Edit
               <RecordItem
                 key={`editing-${index}`}
                 record={record}
-                isConfirmed={false}
                 onUpdate={(updated) => updateEditingRecord(index, updated)}
                 onConfirm={(confirmed) => confirmRecord(index, confirmed)}
                 onDelete={() => deleteEditingRecord(index)}

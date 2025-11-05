@@ -3,10 +3,10 @@ import { CommentRecord } from '@/types/game-review';
 
 interface RecordItemProps {
   record: CommentRecord;
-  isConfirmed: boolean;
   onUpdate: (updated: CommentRecord) => void;
   onConfirm: (confirmed: CommentRecord) => void;
   onDelete: () => void;
+  onTimeClick?: () => void;
 }
 
 const styles = {
@@ -34,6 +34,10 @@ const styles = {
     fontWeight: '600',
     color: '#374151',
     fontFamily: 'monospace',
+  } as CSSProperties,
+  timeDisplayClickable: {
+    cursor: 'pointer',
+    transition: 'color 0.2s',
   } as CSSProperties,
   teamBadge: {
     fontSize: '11px',
@@ -135,7 +139,7 @@ const styles = {
   } as CSSProperties,
 };
 
-export function RecordItem({ record, isConfirmed, onUpdate, onConfirm, onDelete }: RecordItemProps) {
+export function RecordItem({ record, onUpdate, onConfirm, onDelete, onTimeClick }: RecordItemProps) {
   const [comment, setComment] = useState(record.comment);
   const [homeAway, setHomeAway] = useState<'HOME' | 'AWAY'>(record.homeAway);
   const [restGameClock, setRestGameClock] = useState(record.restGameClock || '');
@@ -145,10 +149,10 @@ export function RecordItem({ record, isConfirmed, onUpdate, onConfirm, onDelete 
 
   // 編集中レコードが作成されたら自動フォーカス
   useEffect(() => {
-    if (!isConfirmed && textareaRef.current) {
+    if (!onTimeClick && textareaRef.current) {
       textareaRef.current.focus();
     }
-  }, [isConfirmed]);
+  }, [onTimeClick]);
 
   const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newComment = e.target.value;
@@ -182,14 +186,33 @@ export function RecordItem({ record, isConfirmed, onUpdate, onConfirm, onDelete 
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  if (isConfirmed) {
+
+  if (onTimeClick) {
     // 確定後の表示
     return (
       <div style={styles.container}>
         {/* ヘッダー: 時間+チーム名と削除リンク */}
         <div style={styles.header}>
           <div style={styles.timeAndTeam}>
-            <div style={styles.timeDisplay}>{formatTime(record.videoSec)}</div>
+            <div
+              style={{
+                ...styles.timeDisplay,
+                ...(onTimeClick ? styles.timeDisplayClickable : {}),
+              }}
+              onClick={onTimeClick}
+              onMouseEnter={(e) => {
+                if (onTimeClick) {
+                  e.currentTarget.style.color = '#2563eb';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (onTimeClick) {
+                  e.currentTarget.style.color = '#374151';
+                }
+              }}
+            >
+              {formatTime(record.videoSec)}
+            </div>
             <div
               style={{
                 ...styles.teamBadge,
