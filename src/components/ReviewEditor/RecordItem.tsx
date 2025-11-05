@@ -74,6 +74,29 @@ const styles = {
     borderColor: '#3b82f6',
     boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)',
   } as CSSProperties,
+  inputWrapper: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+  } as CSSProperties,
+  label: {
+    fontSize: '11px',
+    color: '#6b7280',
+    fontWeight: '500',
+  } as CSSProperties,
+  input: {
+    padding: '6px 8px',
+    border: '1px solid #d1d5db',
+    borderRadius: '4px',
+    fontSize: '13px',
+    fontFamily: 'monospace',
+    boxSizing: 'border-box',
+    outline: 'none',
+  } as CSSProperties,
+  inputFocus: {
+    borderColor: '#3b82f6',
+    boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)',
+  } as CSSProperties,
   commentText: {
     fontSize: '13px',
     color: '#374151',
@@ -115,7 +138,9 @@ const styles = {
 export function RecordItem({ record, isConfirmed, onUpdate, onConfirm, onDelete }: RecordItemProps) {
   const [comment, setComment] = useState(record.comment);
   const [homeAway, setHomeAway] = useState<'HOME' | 'AWAY'>(record.homeAway);
+  const [restGameClock, setRestGameClock] = useState(record.restGameClock || '');
   const [isFocused, setIsFocused] = useState(false);
+  const [isClockFocused, setIsClockFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // 編集中レコードが作成されたら自動フォーカス
@@ -128,7 +153,16 @@ export function RecordItem({ record, isConfirmed, onUpdate, onConfirm, onDelete 
   const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newComment = e.target.value;
     setComment(newComment);
-    onUpdate({ ...record, comment: newComment });
+    onUpdate({ ...record, comment: newComment, restGameClock: restGameClock || undefined });
+  };
+
+  const handleClockChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // MM:SS形式のみ許可（数字とコロンのみ）
+    if (/^[0-9:]*$/.test(value)) {
+      setRestGameClock(value);
+      onUpdate({ ...record, comment, restGameClock: value || undefined });
+    }
   };
 
   const handleHomeAwayChange = (value: 'HOME' | 'AWAY') => {
@@ -137,6 +171,7 @@ export function RecordItem({ record, isConfirmed, onUpdate, onConfirm, onDelete 
       ...record,
       comment,
       homeAway: value,
+      restGameClock: restGameClock || undefined,
     };
     onConfirm(confirmedRecord);
   };
@@ -163,6 +198,11 @@ export function RecordItem({ record, isConfirmed, onUpdate, onConfirm, onDelete 
             >
               {homeAway}
             </div>
+            {restGameClock && (
+              <div style={{ fontSize: '11px', color: '#9ca3af', fontFamily: 'monospace' }}>
+                @{restGameClock}
+              </div>
+            )}
           </div>
           <button
             style={styles.deleteLink}
@@ -203,6 +243,23 @@ export function RecordItem({ record, isConfirmed, onUpdate, onConfirm, onDelete 
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
       />
+
+      {/* 残り時間入力 */}
+      <div style={styles.inputWrapper}>
+        <label style={styles.label}>残り時間（任意）</label>
+        <input
+          type="text"
+          style={{
+            ...styles.input,
+            ...(isClockFocused ? styles.inputFocus : {}),
+          }}
+          placeholder="例: 08:45"
+          value={restGameClock}
+          onChange={handleClockChange}
+          onFocus={() => setIsClockFocused(true)}
+          onBlur={() => setIsClockFocused(false)}
+        />
+      </div>
 
       {/* HOME/AWAYボタン */}
       <div style={styles.buttonContainer}>
