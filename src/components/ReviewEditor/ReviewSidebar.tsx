@@ -1,8 +1,8 @@
-import { useState, CSSProperties, useEffect } from 'react';
+import { useState, CSSProperties } from 'react';
 import { EditorView } from './EditorView';
 import { JsonView } from './JsonView';
 import { Period, CommentRecord, GameReview } from '@/types/game-review';
-import { gameReviewStorage, extractVideoIdFromUrl } from '@/utils/storage';
+import { useReviewStorage } from '@/hooks/useReviewStorage';
 
 interface ReviewSidebarProps {
   player: any; // Video.js player
@@ -130,61 +130,13 @@ const styles = {
 export function ReviewSidebar({ player, onClose }: ReviewSidebarProps) {
   const [selectedPeriod, setSelectedPeriod] = useState<Period>('1');
   const [viewMode, setViewMode] = useState<'editor' | 'json'>('editor');
-  const [records, setRecords] = useState<Record<Period, CommentRecord[]>>({
-    '1': [],
-    '2': [],
-    '3': [],
-    '4': [],
-  });
-  const [gameInfo, setGameInfo] = useState({
-    gameId: '',
-    homeTeamName: '',
-    awayTeamName: '',
-  });
-  const [isLoaded, setIsLoaded] = useState(false);
 
-  const videoId = extractVideoIdFromUrl(window.location.href);
+  const { records, setRecords, gameInfo, setGameInfo, isLoaded } = useReviewStorage();
 
   const gameReview: GameReview = {
     ...gameInfo,
     periods: records,
   };
-
-  // 初期ロード
-  useEffect(() => {
-    const loadData = async () => {
-      if (!videoId) {
-        console.warn('[AVC Storage] Could not extract video ID from URL');
-        setIsLoaded(true);
-        return;
-      }
-
-      const savedReview = await gameReviewStorage.load(videoId);
-      if (savedReview) {
-        setRecords(savedReview.periods);
-        setGameInfo({
-          gameId: savedReview.gameId,
-          homeTeamName: savedReview.homeTeamName,
-          awayTeamName: savedReview.awayTeamName,
-        });
-      }
-      setIsLoaded(true);
-    };
-
-    loadData();
-  }, [videoId]);
-
-  // 自動保存
-  useEffect(() => {
-    // 初回ロード完了前は保存しない
-    if (!isLoaded || !videoId) return;
-
-    const saveData = async () => {
-      await gameReviewStorage.save(videoId, gameReview);
-    };
-
-    saveData();
-  }, [records, gameInfo, isLoaded, videoId]);
 
   const handleImport = (imported: GameReview) => {
     // periodsのデータを確実に初期化し、不要なプロパティを除外
