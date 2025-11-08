@@ -16,54 +16,59 @@
  * parseTimeString("invalid")  // => null
  */
 export function parseTimeString(timeString: string): number | null {
-  // 空文字列チェック
-  if (!timeString || timeString.trim() === '') {
-    return null;
-  }
+	// 空文字列チェック
+	if (!timeString || timeString.trim() === "") {
+		return null;
+	}
 
-  const trimmed = timeString.trim();
+	const trimmed = timeString.trim();
 
-  // パターン1: 数字のみ（秒数）
-  if (/^\d+$/.test(trimmed)) {
-    const seconds = parseInt(trimmed, 10);
-    return isNaN(seconds) ? null : seconds;
-  }
+	// パターン1: 数字のみ（秒数）
+	if (/^\d+$/.test(trimmed)) {
+		const seconds = parseInt(trimmed, 10);
+		return Number.isNaN(seconds) ? null : seconds;
+	}
 
-  // パターン2: MM:SS または HH:MM:SS
-  const parts = trimmed.split(':');
+	// パターン2: MM:SS または HH:MM:SS
+	const parts = trimmed.split(":");
 
-  if (parts.length === 2) {
-    // MM:SS
-    const minutes = parseInt(parts[0], 10);
-    const seconds = parseInt(parts[1], 10);
+	if (parts.length === 2) {
+		// MM:SS
+		const minutes = parseInt(parts[0], 10);
+		const seconds = parseInt(parts[1], 10);
 
-    if (isNaN(minutes) || isNaN(seconds) || seconds < 0 || seconds >= 60) {
-      return null;
-    }
+		if (
+			Number.isNaN(minutes) ||
+			Number.isNaN(seconds) ||
+			seconds < 0 ||
+			seconds >= 60
+		) {
+			return null;
+		}
 
-    return minutes * 60 + seconds;
-  } else if (parts.length === 3) {
-    // HH:MM:SS
-    const hours = parseInt(parts[0], 10);
-    const minutes = parseInt(parts[1], 10);
-    const seconds = parseInt(parts[2], 10);
+		return minutes * 60 + seconds;
+	} else if (parts.length === 3) {
+		// HH:MM:SS
+		const hours = parseInt(parts[0], 10);
+		const minutes = parseInt(parts[1], 10);
+		const seconds = parseInt(parts[2], 10);
 
-    if (
-      isNaN(hours) ||
-      isNaN(minutes) ||
-      isNaN(seconds) ||
-      minutes < 0 ||
-      minutes >= 60 ||
-      seconds < 0 ||
-      seconds >= 60
-    ) {
-      return null;
-    }
+		if (
+			Number.isNaN(hours) ||
+			Number.isNaN(minutes) ||
+			Number.isNaN(seconds) ||
+			minutes < 0 ||
+			minutes >= 60 ||
+			seconds < 0 ||
+			seconds >= 60
+		) {
+			return null;
+		}
 
-    return hours * 3600 + minutes * 60 + seconds;
-  }
+		return hours * 3600 + minutes * 60 + seconds;
+	}
 
-  return null;
+	return null;
 }
 
 /**
@@ -77,15 +82,15 @@ export function parseTimeString(timeString: string): number | null {
  * formatTime(4530)  // => "1:15:30"
  */
 export function formatTime(seconds: number): string {
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const secs = Math.floor(seconds % 60);
+	const hours = Math.floor(seconds / 3600);
+	const minutes = Math.floor((seconds % 3600) / 60);
+	const secs = Math.floor(seconds % 60);
 
-  const pad = (num: number) => num.toString().padStart(2, '0');
+	const pad = (num: number) => num.toString().padStart(2, "0");
 
-  if (hours > 0) {
-    return `${hours}:${pad(minutes)}:${pad(secs)}`;
-  } else {
-    return `${minutes}:${pad(secs)}`;
-  }
+	if (hours > 0) {
+		return `${hours}:${pad(minutes)}:${pad(secs)}`;
+	} else {
+		return `${minutes}:${pad(secs)}`;
+	}
 }

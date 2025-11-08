@@ -1,14 +1,12 @@
-import { defineConfig } from 'wxt';
+import { defineConfig } from "wxt";
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
-  manifest: {
-    version: '0.2.1',
-    permissions: [
-      'storage',
-    ]
-  },
-  modules: ['@wxt-dev/module-react'],
-  srcDir: 'src',
-  outDir: 'output',
+	manifest: {
+		version: "0.2.1",
+		permissions: ["storage"],
+	},
+	modules: ["@wxt-dev/module-react"],
+	srcDir: "src",
+	outDir: "output",
 });
