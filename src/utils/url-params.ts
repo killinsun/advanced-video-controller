@@ -1,4 +1,4 @@
-import { parseTimeString } from './time-parser';
+import { parseTimeString } from "./time-parser";
 
 /**
  * URLパラメーターから開始時間を取得する
@@ -17,20 +17,22 @@ import { parseTimeString } from './time-parser';
  * getStartTimeFromUrl() // 現在のURLから取得
  * getStartTimeFromUrl(new URL('https://example.com?t=90'))
  */
-export function getStartTimeFromUrl(url: URL = new URL(window.location.href)): number | null {
-  const tParam = url.searchParams.get('t');
-  if (!tParam) {
-    return null;
-  }
+export function getStartTimeFromUrl(
+	url: URL = new URL(window.location.href),
+): number | null {
+	const tParam = url.searchParams.get("t");
+	if (!tParam) {
+		return null;
+	}
 
-  // パターン1: 数字のみ、またはコロン形式 (parseTimeStringで処理)
-  const parsed = parseTimeString(tParam);
-  if (parsed !== null) {
-    return parsed;
-  }
+	// パターン1: 数字のみ、またはコロン形式 (parseTimeStringで処理)
+	const parsed = parseTimeString(tParam);
+	if (parsed !== null) {
+		return parsed;
+	}
 
-  // パターン2: 1h15m30s 形式
-  return parseHumanReadableTime(tParam);
+	// パターン2: 1h15m30s 形式
+	return parseHumanReadableTime(tParam);
 }
 
 /**
@@ -41,26 +43,26 @@ export function getStartTimeFromUrl(url: URL = new URL(window.location.href)): n
  * @returns 秒数、無効な場合はnull
  */
 function parseHumanReadableTime(timeString: string): number | null {
-  const trimmed = timeString.toLowerCase().trim();
+	const trimmed = timeString.toLowerCase().trim();
 
-  // パターン: 1h15m30s
-  const regex = /^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/;
-  const match = trimmed.match(regex);
+	// パターン: 1h15m30s
+	const regex = /^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/;
+	const match = trimmed.match(regex);
 
-  if (!match) {
-    return null;
-  }
+	if (!match) {
+		return null;
+	}
 
-  const hours = parseInt(match[1] || '0', 10);
-  const minutes = parseInt(match[2] || '0', 10);
-  const seconds = parseInt(match[3] || '0', 10);
+	const hours = parseInt(match[1] || "0", 10);
+	const minutes = parseInt(match[2] || "0", 10);
+	const seconds = parseInt(match[3] || "0", 10);
 
-  // 少なくとも1つの値が必要
-  if (hours === 0 && minutes === 0 && seconds === 0) {
-    return null;
-  }
+	// 少なくとも1つの値が必要
+	if (hours === 0 && minutes === 0 && seconds === 0) {
+		return null;
+	}
 
-  return hours * 3600 + minutes * 60 + seconds;
+	return hours * 3600 + minutes * 60 + seconds;
 }
 
 /**
@@ -73,7 +75,7 @@ function parseHumanReadableTime(timeString: string): number | null {
  * setStartTimeInUrl(90) // 現在のURLに ?t=90 を追加
  */
 export function setStartTimeInUrl(seconds: number): string {
-  const url = new URL(window.location.href);
-  url.searchParams.set('t', seconds.toString());
-  return url.toString();
+	const url = new URL(window.location.href);
+	url.searchParams.set("t", seconds.toString());
+	return url.toString();
 }
