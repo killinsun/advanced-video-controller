@@ -1,68 +1,10 @@
-import { useState, type CSSProperties, useEffect } from "react";
+import { useState, useEffect } from "react";
 import type { GameReview } from "@/types/game-review";
 
 interface JsonViewProps {
 	gameReview: GameReview;
 	onImport: (imported: GameReview) => void;
 }
-
-const styles = {
-	container: {
-		display: "flex",
-		flexDirection: "column",
-		gap: "8px",
-		height: "100%",
-	} as CSSProperties,
-	buttonGroup: {
-		display: "flex",
-		gap: "8px",
-		justifyContent: "flex-end",
-	} as CSSProperties,
-	button: {
-		padding: "6px 12px",
-		backgroundColor: "transparent",
-		color: "#6b7280",
-		borderWidth: "1px",
-		borderStyle: "solid",
-		borderColor: "#d1d5db",
-		borderRadius: "4px",
-		cursor: "pointer",
-		fontSize: "12px",
-		fontWeight: "500",
-		transition: "all 0.2s",
-	} as CSSProperties,
-	buttonHover: {
-		backgroundColor: "#f3f4f6",
-		borderColor: "#9ca3af",
-		color: "#374151",
-	} as CSSProperties,
-	buttonSuccess: {
-		borderColor: "#10b981",
-		color: "#10b981",
-	} as CSSProperties,
-	textarea: {
-		width: "100%",
-		flex: 1,
-		padding: "12px",
-		borderWidth: "1px",
-		borderStyle: "solid",
-		borderColor: "#d1d5db",
-		borderRadius: "6px",
-		fontSize: "12px",
-		fontFamily: "monospace",
-		resize: "none",
-		boxSizing: "border-box",
-		outline: "none",
-		backgroundColor: "#f9fafb",
-	} as CSSProperties,
-	error: {
-		padding: "8px 12px",
-		backgroundColor: "#fee2e2",
-		color: "#991b1b",
-		borderRadius: "4px",
-		fontSize: "11px",
-	} as CSSProperties,
-};
 
 export function JsonView({ gameReview, onImport }: JsonViewProps) {
 	const [copied, setCopied] = useState(false);
@@ -119,52 +61,34 @@ export function JsonView({ gameReview, onImport }: JsonViewProps) {
 	};
 
 	return (
-		<div style={styles.container}>
+		<div className="flex flex-col gap-2 h-full">
 			{/* ボタングループ */}
-			<div style={styles.buttonGroup}>
+			<div className="flex gap-2 justify-end">
 				<button
 					type="button"
-					style={{
-						...styles.button,
-						...(copied ? styles.buttonSuccess : {}),
-					}}
+					className={`
+						px-3 py-1.5 bg-transparent text-xs font-medium border rounded cursor-pointer transition-all duration-200
+						${copied ? "border-emerald-500 text-emerald-500" : "border-gray-300 text-gray-500 hover:bg-gray-100 hover:border-gray-400 hover:text-gray-700"}
+					`}
 					onClick={copyToClipboard}
-					onMouseEnter={(e) => {
-						if (!copied) {
-							Object.assign(e.currentTarget.style, styles.buttonHover);
-						}
-					}}
-					onMouseLeave={(e) => {
-						e.currentTarget.style.backgroundColor = "transparent";
-						e.currentTarget.style.borderColor = copied ? "#10b981" : "#d1d5db";
-						e.currentTarget.style.color = copied ? "#10b981" : "#6b7280";
-					}}
 				>
 					{copied ? "✓ コピー済み" : "コピー"}
 				</button>
 				<button
 					type="button"
-					style={styles.button}
+					className="px-3 py-1.5 bg-transparent border border-gray-300 text-gray-500 rounded cursor-pointer text-xs font-medium transition-all duration-200 hover:bg-gray-100 hover:border-gray-400 hover:text-gray-700"
 					onClick={handleImport}
-					onMouseEnter={(e) => {
-						Object.assign(e.currentTarget.style, styles.buttonHover);
-					}}
-					onMouseLeave={(e) => {
-						e.currentTarget.style.backgroundColor = "transparent";
-						e.currentTarget.style.borderColor = "#d1d5db";
-						e.currentTarget.style.color = "#6b7280";
-					}}
 				>
 					復元
 				</button>
 			</div>
 
 			{/* エラー表示 */}
-			{error && <div style={styles.error}>{error}</div>}
+			{error && <div className="px-3 py-2 bg-red-100 text-red-800 rounded text-[11px]">{error}</div>}
 
 			{/* JSON編集エリア */}
 			<textarea
-				style={styles.textarea}
+				className="w-full flex-1 p-3 border border-gray-300 rounded-md text-xs font-mono resize-none box-border outline-none bg-gray-50"
 				value={jsonText}
 				onChange={(e) => setJsonText(e.target.value)}
 				spellCheck={false}

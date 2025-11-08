@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@theme {
+  --font-size-base: 16px;
+  --line-height-base: 1.5;
+}
+
+/* Shadow DOM用のベーススタイル調整 */
+:host,
+:root {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+}

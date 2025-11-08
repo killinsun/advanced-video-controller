@@ -1,4 +1,4 @@
-import { useState, type CSSProperties, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { CommentRecord } from "@/types/game-review";
 
 interface RecordItemProps {
@@ -8,136 +8,6 @@ interface RecordItemProps {
 	onDelete: () => void;
 	onTimeClick?: () => void;
 }
-
-const styles = {
-	container: {
-		padding: "12px",
-		backgroundColor: "#f9fafb",
-		borderRadius: "6px",
-		border: "1px solid #e5e7eb",
-		display: "flex",
-		flexDirection: "column",
-		gap: "8px",
-	} as CSSProperties,
-	header: {
-		display: "flex",
-		justifyContent: "space-between",
-		alignItems: "center",
-	} as CSSProperties,
-	timeAndTeam: {
-		display: "flex",
-		alignItems: "center",
-		gap: "8px",
-	} as CSSProperties,
-	timeDisplay: {
-		fontSize: "14px",
-		fontWeight: "600",
-		color: "#374151",
-		fontFamily: "monospace",
-	} as CSSProperties,
-	timeDisplayClickable: {
-		cursor: "pointer",
-		transition: "color 0.2s",
-	} as CSSProperties,
-	teamBadge: {
-		fontSize: "11px",
-		fontWeight: "600",
-		padding: "2px 8px",
-		borderRadius: "4px",
-	} as CSSProperties,
-	teamBadgeHome: {
-		backgroundColor: "#dbeafe",
-		color: "#1e40af",
-	} as CSSProperties,
-	teamBadgeAway: {
-		backgroundColor: "#fee2e2",
-		color: "#991b1b",
-	} as CSSProperties,
-	deleteLink: {
-		fontSize: "12px",
-		color: "#ef4444",
-		cursor: "pointer",
-		textDecoration: "underline",
-		background: "none",
-		border: "none",
-		padding: 0,
-	} as CSSProperties,
-	textarea: {
-		width: "100%",
-		minHeight: "60px",
-		padding: "8px",
-		border: "1px solid #d1d5db",
-		borderRadius: "4px",
-		fontSize: "13px",
-		resize: "vertical",
-		fontFamily: "inherit",
-		boxSizing: "border-box",
-		outline: "none",
-	} as CSSProperties,
-	textareaFocus: {
-		borderColor: "#3b82f6",
-		boxShadow: "0 0 0 3px rgba(59, 130, 246, 0.1)",
-	} as CSSProperties,
-	inputWrapper: {
-		display: "flex",
-		flexDirection: "column",
-		gap: "4px",
-	} as CSSProperties,
-	label: {
-		fontSize: "11px",
-		color: "#6b7280",
-		fontWeight: "500",
-	} as CSSProperties,
-	input: {
-		padding: "6px 8px",
-		border: "1px solid #d1d5db",
-		borderRadius: "4px",
-		fontSize: "13px",
-		fontFamily: "monospace",
-		boxSizing: "border-box",
-		outline: "none",
-	} as CSSProperties,
-	inputFocus: {
-		borderColor: "#3b82f6",
-		boxShadow: "0 0 0 3px rgba(59, 130, 246, 0.1)",
-	} as CSSProperties,
-	commentText: {
-		fontSize: "13px",
-		color: "#374151",
-		whiteSpace: "pre-wrap",
-		wordBreak: "break-word",
-		minHeight: "20px",
-	} as CSSProperties,
-	buttonContainer: {
-		display: "flex",
-		gap: "8px",
-	} as CSSProperties,
-	homeAwayButton: {
-		flex: 1,
-		padding: "8px",
-		border: "2px solid #e5e7eb",
-		borderRadius: "4px",
-		backgroundColor: "white",
-		cursor: "pointer",
-		fontSize: "13px",
-		fontWeight: "600",
-		transition: "all 0.2s",
-		outline: "none",
-	} as CSSProperties,
-	homeAwayButtonFocus: {
-		boxShadow: "0 0 0 3px rgba(59, 130, 246, 0.3)",
-	} as CSSProperties,
-	homeButtonActive: {
-		backgroundColor: "#3b82f6",
-		color: "white",
-		borderColor: "#3b82f6",
-	} as CSSProperties,
-	awayButtonActive: {
-		backgroundColor: "#ef4444",
-		color: "white",
-		borderColor: "#ef4444",
-	} as CSSProperties,
-};
 
 export function RecordItem({
 	record,
@@ -201,81 +71,63 @@ export function RecordItem({
 	if (onTimeClick) {
 		// 確定後の表示
 		return (
-			<div style={styles.container}>
+			<div className="p-3 bg-gray-50 rounded-md border border-gray-200 flex flex-col gap-2">
 				{/* ヘッダー: 時間+チーム名と削除リンク */}
-				<div style={styles.header}>
-					<div style={styles.timeAndTeam}>
+				<div className="flex justify-between items-center">
+					<div className="flex items-center gap-2">
 						<button
 							type="button"
-							style={{
-								...styles.timeDisplay,
-							}}
+							className="text-sm font-semibold text-gray-700 font-mono transition-colors duration-200 hover:text-blue-600 bg-transparent border-none p-0 cursor-pointer"
 							onClick={onTimeClick}
-							onMouseEnter={(e) => {
-								e.currentTarget.style.color = "#2563eb";
-							}}
-							onMouseLeave={(e) => {
-								e.currentTarget.style.color = "#374151";
-							}}
 						>
 							{formatTime(record.videoSec)}
 						</button>
 						<div
-							style={{
-								...styles.teamBadge,
-								...(homeAway === "HOME"
-									? styles.teamBadgeHome
-									: styles.teamBadgeAway),
-							}}
+							className={`
+								text-[11px] font-semibold px-2 py-0.5 rounded
+								${homeAway === "HOME" ? "bg-blue-100 text-blue-800" : "bg-red-100 text-red-800"}
+							`}
 						>
 							{homeAway}
 						</div>
 						{restGameClock && (
-							<div
-								style={{
-									fontSize: "11px",
-									color: "#9ca3af",
-									fontFamily: "monospace",
-								}}
-							>
+							<div className="text-[11px] text-gray-400 font-mono">
 								@{restGameClock}
 							</div>
 						)}
 					</div>
 					<button
 						type="button"
-						style={styles.deleteLink}
+						className="text-xs text-red-500 cursor-pointer underline bg-transparent border-none p-0 transition-opacity duration-200 hover:opacity-70"
 						onClick={onDelete}
-						onMouseEnter={(e) => {
-							e.currentTarget.style.opacity = "0.7";
-						}}
-						onMouseLeave={(e) => {
-							e.currentTarget.style.opacity = "1";
-						}}
 					>
 						削除
 					</button>
 				</div>
 
 				{/* コメントテキスト表示 */}
-				<div style={styles.commentText}>{comment || "(コメントなし)"}</div>
+				<div className="text-[13px] text-gray-700 whitespace-pre-wrap break-words min-h-[20px]">
+					{comment || "(コメントなし)"}
+				</div>
 			</div>
 		);
 	}
 
 	// 編集中の表示
 	return (
-		<div style={styles.container}>
+		<div className="p-3 bg-gray-50 rounded-md border border-gray-200 flex flex-col gap-2">
 			{/* 時間表示 */}
-			<div style={styles.timeDisplay}>{formatTime(record.videoSec)}</div>
+			<div className="text-sm font-semibold text-gray-700 font-mono">
+				{formatTime(record.videoSec)}
+			</div>
 
 			{/* コメント入力 */}
 			<textarea
 				ref={textareaRef}
-				style={{
-					...styles.textarea,
-					...(isFocused ? styles.textareaFocus : {}),
-				}}
+				className={`
+					w-full min-h-[60px] p-2 border rounded text-[13px] resize-y font-inherit box-border outline-none transition-all duration-200
+					${isFocused ? "border-blue-500 shadow-[0_0_0_3px_rgba(59,130,246,0.1)]" : "border-gray-300"}
+				`}
 				placeholder="コメントを入力..."
 				value={comment}
 				onChange={handleCommentChange}
@@ -284,16 +136,16 @@ export function RecordItem({
 			/>
 
 			{/* 残り時間入力 */}
-			<div style={styles.inputWrapper}>
-				<label htmlFor="restGameClock" style={styles.label}>
+			<div className="flex flex-col gap-1">
+				<label htmlFor="restGameClock" className="text-[11px] text-gray-500 font-medium">
 					残り時間（任意）
 				</label>
 				<input
 					type="text"
-					style={{
-						...styles.input,
-						...(isClockFocused ? styles.inputFocus : {}),
-					}}
+					className={`
+						px-2 py-1.5 border rounded text-[13px] font-mono box-border outline-none transition-all duration-200
+						${isClockFocused ? "border-blue-500 shadow-[0_0_0_3px_rgba(59,130,246,0.1)]" : "border-gray-300"}
+					`}
 					placeholder="例: 08:45"
 					value={restGameClock}
 					onChange={handleClockChange}
@@ -303,58 +155,24 @@ export function RecordItem({
 			</div>
 
 			{/* HOME/AWAYボタン */}
-			<div style={styles.buttonContainer}>
+			<div className="flex gap-2">
 				<button
 					type="button"
-					style={{
-						...styles.homeAwayButton,
-						...(homeAway === "HOME" ? styles.homeButtonActive : {}),
-					}}
+					className={`
+						flex-1 py-2 border-2 rounded bg-white cursor-pointer text-[13px] font-semibold transition-all duration-200 outline-none
+						${homeAway === "HOME" ? "bg-blue-500 text-white border-blue-500" : "border-gray-200 hover:bg-gray-100 focus:shadow-[0_0_0_3px_rgba(59,130,246,0.3)]"}
+					`}
 					onClick={() => handleHomeAwayChange("HOME")}
-					onMouseEnter={(e) => {
-						if (homeAway !== "HOME") {
-							e.currentTarget.style.backgroundColor = "#f3f4f6";
-						}
-					}}
-					onMouseLeave={(e) => {
-						if (homeAway !== "HOME") {
-							e.currentTarget.style.backgroundColor = "white";
-						}
-					}}
-					onFocus={(e) => {
-						e.currentTarget.style.boxShadow =
-							"0 0 0 3px rgba(59, 130, 246, 0.3)";
-					}}
-					onBlur={(e) => {
-						e.currentTarget.style.boxShadow = "none";
-					}}
 				>
 					HOME
 				</button>
 				<button
 					type="button"
-					style={{
-						...styles.homeAwayButton,
-						...(homeAway === "AWAY" ? styles.awayButtonActive : {}),
-					}}
+					className={`
+						flex-1 py-2 border-2 rounded bg-white cursor-pointer text-[13px] font-semibold transition-all duration-200 outline-none
+						${homeAway === "AWAY" ? "bg-red-500 text-white border-red-500" : "border-gray-200 hover:bg-gray-100 focus:shadow-[0_0_0_3px_rgba(59,130,246,0.3)]"}
+					`}
 					onClick={() => handleHomeAwayChange("AWAY")}
-					onMouseEnter={(e) => {
-						if (homeAway !== "AWAY") {
-							e.currentTarget.style.backgroundColor = "#f3f4f6";
-						}
-					}}
-					onMouseLeave={(e) => {
-						if (homeAway !== "AWAY") {
-							e.currentTarget.style.backgroundColor = "white";
-						}
-					}}
-					onFocus={(e) => {
-						e.currentTarget.style.boxShadow =
-							"0 0 0 3px rgba(59, 130, 246, 0.3)";
-					}}
-					onBlur={(e) => {
-						e.currentTarget.style.boxShadow = "none";
-					}}
 				>
 					AWAY
 				</button>

@@ -5,6 +5,7 @@ import {
 	detectVideoJsPlayer,
 	waitForPlayerReady,
 } from "@/utils/player-detector";
+import tailwindStyles from "@/assets/tailwind.css?inline";
 
 interface ReviewAppProps {
 	player: any; // Video.js player
@@ -19,43 +20,28 @@ function ReviewApp({ player }: ReviewAppProps) {
 			<button
 				type="button"
 				onClick={() => setIsVisible(!isVisible)}
-				style={{
-					display: isVisible ? "none" : "block",
-					position: "fixed",
-					bottom: "20px",
-					right: isVisible ? "404px" : "20px", // サイドバーの幅 + 20px
-					zIndex: 9999,
-					padding: "12px 20px",
-					backgroundColor: "#3b82f6",
-					color: "white",
-					border: "none",
-					borderRadius: "8px",
-					cursor: "pointer",
-					fontSize: "14px",
-					fontWeight: "600",
-					boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-					transition: "all 0.3s",
-				}}
-				onMouseEnter={(e) => {
-					e.currentTarget.style.backgroundColor = "#2563eb";
-					e.currentTarget.style.transform = "translateY(-2px)";
-					e.currentTarget.style.boxShadow = "0 6px 16px rgba(0, 0, 0, 0.2)";
-				}}
-				onMouseLeave={(e) => {
-					e.currentTarget.style.backgroundColor = "#3b82f6";
-					e.currentTarget.style.transform = "translateY(0)";
-					e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.15)";
-				}}
+				className={`
+					${isVisible ? "hidden" : "block"}
+					fixed bottom-5 z-[9999]
+					${isVisible ? "right-[404px]" : "right-5"}
+					px-5 py-3
+					bg-blue-500 text-white
+					rounded-lg shadow-md
+					text-sm font-semibold
+					hover:bg-blue-600 hover:-translate-y-0.5 hover:shadow-lg
+					transition-all duration-300
+					cursor-pointer
+				`}
 			>
 				{isVisible ? "📝" : "レビューを開く"}
 			</button>
 
 			{/* サイドバー */}
 			<div
-				style={{
-					width: isVisible ? "384px" : "0",
-					flexShrink: 0,
-				}}
+				className={`
+					${isVisible ? "w-[384px]" : "w-0"}
+					flex-shrink-0
+				`}
 			>
 				<ReviewSidebar player={player} onClose={() => setIsVisible(false)} />
 			</div>
@@ -113,13 +99,29 @@ export default defineContentScript({
 				overflow: "hidden",
 			});
 
-			// React UIコンテナを作成してflexWrapperに追加
+			// Shadow DOMホストを作成
+			const shadowHost = document.createElement("div");
+			shadowHost.id = "avc-review-shadow-host";
+			Object.assign(shadowHost.style, {
+				display: "contents", // flexコンテナの子要素として振る舞う
+			});
+			flexWrapper.appendChild(shadowHost);
+
+			// Shadow DOMを作成
+			const shadowRoot = shadowHost.attachShadow({ mode: "open" });
+
+			// Tailwind CSSをShadow DOM内に注入
+			const styleElement = document.createElement("style");
+			styleElement.textContent = tailwindStyles;
+			shadowRoot.appendChild(styleElement);
+
+			// ReactコンテナをShadow DOM内に作成
 			const reactContainer = document.createElement("div");
 			reactContainer.id = "avc-review-react-root";
 			Object.assign(reactContainer.style, {
-				display: "contents", // flexコンテナの子要素として振る舞う
+				display: "contents",
 			});
-			flexWrapper.appendChild(reactContainer);
+			shadowRoot.appendChild(reactContainer);
 
 			// Reactをマウント
 			const root = ReactDOM.createRoot(reactContainer);

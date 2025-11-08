@@ -1,3 +1,4 @@
+import "@/assets/tailwind.css";
 import ReactDOM from "react-dom/client";
 import {
 	detectVideoJsPlayer,
