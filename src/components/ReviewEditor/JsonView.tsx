@@ -1,4 +1,4 @@
-import { useState, type CSSProperties, useEffect } from "react";
+import { type CSSProperties, useEffect, useState } from "react";
 import type { GameReview } from "@/types/game-review";
 
 interface JsonViewProps {
