@@ -1,6 +1,9 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/Button";
 import type { CommentRecord } from "@/types/game-review";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
+import { Textarea } from "@/components/ui/Textarea";
 
 interface RecordFormProps {
 	initialVideoSec: number;
@@ -54,25 +57,22 @@ export function RecordForm({
 				</Button>
 			</div>
 
-			<textarea
+			<Textarea
 				autoFocus
-				className="min-h-[60px] w-full resize-y rounded border border-gray-300 p-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+				className="min-h-[60px] resize-y"
 				placeholder="コメントを入力..."
 				value={comment}
 				onChange={(e) => setComment(e.target.value)}
 			/>
 
 			<div className="flex flex-col gap-1">
-				<label
-					htmlFor="restGameClock"
-					className="text-xs font-medium text-gray-500"
-				>
+				<Label htmlFor="restGameClock" className="text-xs">
 					残り時間（任意）
-				</label>
-				<input
+				</Label>
+				<Input
 					type="text"
 					id="restGameClock"
-					className="rounded border border-gray-300 px-2 py-1.5 font-mono text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+					className="font-mono text-sm"
 					placeholder="例: 08:45"
 					value={restGameClock}
 					onChange={handleClockChange}

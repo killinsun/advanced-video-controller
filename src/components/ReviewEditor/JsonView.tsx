@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import type { GameReview } from "@/types/game-review";
+import { Alert, AlertDescription } from "@/components/ui/Alert";
+import { Button } from "@/components/ui/Button";
+import { Textarea } from "@/components/ui/Textarea";
 
 interface JsonViewProps {
 	gameReview: GameReview;
@@ -60,33 +63,27 @@ export function JsonView({ gameReview, onImport }: JsonViewProps) {
 	return (
 		<div className="flex flex-col gap-2 h-full">
 			<div className="flex gap-2 justify-end">
-				<button
-					type="button"
-					className={`
-						px-3 py-1.5 bg-transparent text-xs font-medium border rounded cursor-pointer transition-all duration-200
-						${copied ? "border-emerald-500 text-emerald-500" : "border-gray-300 text-gray-500 hover:bg-gray-100 hover:border-gray-400 hover:text-gray-700"}
-					`}
+				<Button
+					variant="outline"
+					size="sm"
 					onClick={copyToClipboard}
+					className={copied ? "border-emerald-500 text-emerald-500" : ""}
 				>
 					{copied ? "✓ コピー済み" : "コピー"}
-				</button>
-				<button
-					type="button"
-					className="px-3 py-1.5 bg-transparent border border-gray-300 text-gray-500 rounded cursor-pointer text-xs font-medium transition-all duration-200 hover:bg-gray-100 hover:border-gray-400 hover:text-gray-700"
-					onClick={handleImport}
-				>
+				</Button>
+				<Button variant="outline" size="sm" onClick={handleImport}>
 					復元
-				</button>
+				</Button>
 			</div>
 
 			{error && (
-				<div className="px-3 py-2 bg-red-100 text-red-800 rounded text-[11px]">
-					{error}
-				</div>
+				<Alert variant="destructive">
+					<AlertDescription className="text-[11px]">{error}</AlertDescription>
+				</Alert>
 			)}
 
-			<textarea
-				className="w-full flex-1 p-3 border border-gray-300 rounded-md text-xs font-mono resize-none box-border outline-none bg-gray-50"
+			<Textarea
+				className="flex-1 text-xs font-mono bg-gray-50"
 				value={jsonText}
 				onChange={(e) => setJsonText(e.target.value)}
 				spellCheck={false}

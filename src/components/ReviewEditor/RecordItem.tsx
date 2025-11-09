@@ -1,5 +1,6 @@
-import { Button } from "@/components/ui/Button";
 import type { CommentRecord } from "@/types/game-review";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/Button";
 
 interface RecordItemProps {
 	record: CommentRecord;
@@ -25,15 +26,12 @@ export function RecordItem({ record, onDelete, onTimeClick }: RecordItemProps) {
 					>
 						{formatTime(record.videoSec)}
 					</button>
-					<div
-						className={`rounded px-2 py-0.5 text-xs font-semibold ${
-							record.homeAway === "HOME"
-								? "bg-blue-100 text-blue-900"
-								: "bg-red-100 text-red-900"
-						}`}
+					<Badge
+						variant={record.homeAway === "HOME" ? "default" : "destructive"}
+						className="text-xs font-semibold"
 					>
 						{record.homeAway}
-					</div>
+					</Badge>
 					{record.restGameClock && (
 						<div className="font-mono text-xs text-gray-400">
 							@{record.restGameClock}
