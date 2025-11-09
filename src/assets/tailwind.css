@@ -3,6 +3,8 @@
 @theme {
   --font-size-base: 16px;
   --line-height-base: 1.5;
+  --font-size-sm: 1rem;
+  --font-size-xs: 0.875rem;
 }
 
 /* Shadow DOM用のベーススタイル調整 */

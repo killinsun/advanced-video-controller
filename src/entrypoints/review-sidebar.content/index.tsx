@@ -6,6 +6,7 @@ import {
 	waitForPlayerReady,
 } from "@/utils/player-detector";
 import tailwindStyles from "@/assets/tailwind.css?inline";
+import { Button } from "@/components/ui/Button";
 
 interface ReviewAppProps {
 	player: any; // Video.js player
@@ -17,14 +18,14 @@ function ReviewApp({ player }: ReviewAppProps) {
 	return (
 		<>
 			{/* トグルボタン */}
-			<button
-				type="button"
+			<Button
+				variant="outline"
 				onClick={() => setIsVisible(!isVisible)}
 				className={`
 					${isVisible ? "hidden" : "block"}
 					fixed bottom-5 z-[9999]
 					${isVisible ? "right-[404px]" : "right-5"}
-					px-5 py-3
+					px-5 py-2
 					bg-blue-500 text-white
 					rounded-lg shadow-md
 					text-sm font-semibold
@@ -34,7 +35,7 @@ function ReviewApp({ player }: ReviewAppProps) {
 				`}
 			>
 				{isVisible ? "📝" : "レビューを開く"}
-			</button>
+			</Button>
 
 			{/* サイドバー */}
 			<div

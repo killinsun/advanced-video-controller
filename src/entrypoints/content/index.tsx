@@ -1,4 +1,4 @@
-import "@/assets/tailwind.css";
+import tailwindStyles from "@/assets/tailwind.css?inline";
 import ReactDOM from "react-dom/client";
 import {
 	detectVideoJsPlayer,
@@ -63,19 +63,33 @@ function mountControlPanel(
 		return;
 	}
 
-	// UIコンテナを作成
-	const uiContainer = document.createElement("div");
-	uiContainer.id = "avc-control-panel";
-	uiContainer.style.width = "100%";
+	// Shadow DOMホストを作成
+	const shadowHost = document.createElement("div");
+	shadowHost.id = "avc-control-panel-shadow-host";
+	shadowHost.style.width = "100%";
 
 	// controllerContainerの直後に挿入
 	controllerContainer.parentElement?.insertAdjacentElement(
 		"afterend",
-		uiContainer,
+		shadowHost,
 	);
 
+	// Shadow DOMを作成
+	const shadowRoot = shadowHost.attachShadow({ mode: "open" });
+
+	// Tailwind CSSをShadow DOM内に注入
+	const styleElement = document.createElement("style");
+	styleElement.textContent = tailwindStyles;
+	shadowRoot.appendChild(styleElement);
+
+	// ReactコンテナをShadow DOM内に作成
+	const reactContainer = document.createElement("div");
+	reactContainer.id = "avc-control-panel-react-root";
+	reactContainer.style.width = "100%";
+	shadowRoot.appendChild(reactContainer);
+
 	// Reactコンポーネントをマウント
-	const root = ReactDOM.createRoot(uiContainer);
+	const root = ReactDOM.createRoot(reactContainer);
 	root.render(
 		<ControlPanel controller={frameController} initialTime={initialTime} />,
 	);
