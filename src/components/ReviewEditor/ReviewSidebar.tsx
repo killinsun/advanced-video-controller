@@ -1,8 +1,8 @@
-import { useState, type CSSProperties } from "react";
+import { type CSSProperties, useState } from "react";
+import { useReviewStorage } from "@/hooks/useReviewStorage";
+import type { CommentRecord, GameReview, Period } from "@/types/game-review";
 import { EditorView } from "./EditorView";
 import { JsonView } from "./JsonView";
-import type { Period, CommentRecord, GameReview } from "@/types/game-review";
-import { useReviewStorage } from "@/hooks/useReviewStorage";
 
 interface ReviewSidebarProps {
 	player: any; // Video.js player
@@ -140,7 +140,6 @@ export function ReviewSidebar({ player, onClose }: ReviewSidebarProps) {
 	};
 
 	const handleImport = (imported: GameReview) => {
-		// periodsのデータを確実に初期化し、不要なプロパティを除外
 		const cleanRecord = (record: any): CommentRecord => ({
 			videoSec: record.videoSec,
 			comment: record.comment,
