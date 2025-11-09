@@ -1,11 +1,11 @@
 import { useState } from "react";
+import { useReviewStorage } from "@/hooks/useReviewStorage";
+import type { CommentRecord, GameReview, Period } from "@/types/game-review";
 import { EditorView } from "./EditorView";
 import { JsonView } from "./JsonView";
-import type { Period, CommentRecord, GameReview } from "@/types/game-review";
-import { useReviewStorage } from "@/hooks/useReviewStorage";
 
 interface ReviewSidebarProps {
-	player: any; // Video.js player
+	player: any;
 	onClose: () => void;
 }
 
@@ -13,8 +13,7 @@ export function ReviewSidebar({ player, onClose }: ReviewSidebarProps) {
 	const [selectedPeriod, setSelectedPeriod] = useState<Period>("1");
 	const [viewMode, setViewMode] = useState<"editor" | "json">("editor");
 
-	const { records, setRecords, gameInfo, setGameInfo, isLoaded } =
-		useReviewStorage();
+	const { records, setRecords, gameInfo, setGameInfo } = useReviewStorage();
 
 	const gameReview: GameReview = {
 		...gameInfo,
@@ -22,7 +21,6 @@ export function ReviewSidebar({ player, onClose }: ReviewSidebarProps) {
 	};
 
 	const handleImport = (imported: GameReview) => {
-		// periodsのデータを確実に初期化し、不要なプロパティを除外
 		const cleanRecord = (record: any): CommentRecord => ({
 			videoSec: record.videoSec,
 			comment: record.comment,
@@ -48,7 +46,6 @@ export function ReviewSidebar({ player, onClose }: ReviewSidebarProps) {
 
 	return (
 		<div className="h-screen w-full bg-white shadow-[-4px_0_16px_rgba(0,0,0,0.1)] flex flex-col gap-2">
-			{/* ヘッダー */}
 			<div className="flex items-center justify-between px-4 py-2 border-b border-gray-200">
 				<h2 className="text-lg font-bold text-gray-800 m-0">ゲームレビュー</h2>
 				<button
@@ -84,8 +81,9 @@ export function ReviewSidebar({ player, onClose }: ReviewSidebarProps) {
 				</button>
 			</div>
 
-			{/* クォータータブ */}
-			<div className={`flex border-b border-gray-200 ${viewMode === "editor" ? "block" : "hidden"}`}>
+			<div
+				className={`flex border-b border-gray-200 ${viewMode === "editor" ? "block" : "hidden"}`}
+			>
 				{(["1", "2", "3", "4"] as Period[]).map((period) => (
 					<button
 						type="button"
@@ -104,9 +102,7 @@ export function ReviewSidebar({ player, onClose }: ReviewSidebarProps) {
 				))}
 			</div>
 
-			{/* コンテンツエリア */}
 			<div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 relative">
-				{/* コンテンツ */}
 				{viewMode === "editor" ? (
 					<EditorView
 						player={player}

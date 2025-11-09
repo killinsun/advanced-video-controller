@@ -1,16 +1,14 @@
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { type Dispatch, type SetStateAction, useState } from "react";
+import { Button } from "@/components/ui/Button";
+import type { CommentRecord, Period } from "@/types/game-review";
+import { RecordForm } from "./RecordForm";
 import { RecordItem } from "./RecordItem";
-import type { Period, CommentRecord } from "@/types/game-review";
 
 interface EditorViewProps {
-	player: any; // Video.js player
+	player: any;
 	selectedPeriod: Period;
 	records: Record<Period, CommentRecord[]>;
 	setRecords: Dispatch<SetStateAction<Record<Period, CommentRecord[]>>>;
-}
-
-interface EditingRecord extends CommentRecord {
-	isConfirmed: boolean;
 }
 
 export function EditorView({
@@ -19,7 +17,14 @@ export function EditorView({
 	records,
 	setRecords,
 }: EditorViewProps) {
-	const [editingRecords, setEditingRecords] = useState<EditingRecord[]>([]);
+	const [editingRecords, setEditingRecords] = useState<
+		Record<Period, number[]>
+	>({
+		"1": [],
+		"2": [],
+		"3": [],
+		"4": [],
+	});
 
 	const captureTime = () => {
 		if (!player) {
@@ -28,41 +33,35 @@ export function EditorView({
 		}
 
 		const currentTime = player.currentTime();
-		const newRecord: EditingRecord = {
-			videoSec: Math.floor(currentTime),
-			comment: "",
-			homeAway: "HOME",
-			isConfirmed: false,
-		};
+		const videoSec = Math.floor(currentTime);
 
-		setEditingRecords((prev) => [...prev, newRecord]);
+		setEditingRecords((prev) => ({
+			...prev,
+			[selectedPeriod]: [...prev[selectedPeriod], videoSec],
+		}));
 		console.log(
 			`[AVC Review] Time captured: ${currentTime}s in ${selectedPeriod}Q`,
 		);
 	};
 
-	const updateEditingRecord = (index: number, updated: CommentRecord) => {
-		setEditingRecords((prev) =>
-			prev.map((r, i) =>
-				i === index ? { ...updated, isConfirmed: r.isConfirmed } : r,
-			),
-		);
-	};
-
-	const confirmRecord = (index: number, record: CommentRecord) => {
-		// 確定済みrecordsに追加
+	const confirmRecord = (videoSec: number, record: CommentRecord) => {
 		setRecords((prev) => ({
 			...prev,
 			[selectedPeriod]: [...prev[selectedPeriod], record],
 		}));
 
-		// 編集中リストから削除
-		setEditingRecords((prev) => prev.filter((_, i) => i !== index));
+		setEditingRecords((prev) => ({
+			...prev,
+			[selectedPeriod]: prev[selectedPeriod].filter((sec) => sec !== videoSec),
+		}));
 		console.log(`[AVC Review] Record confirmed in ${selectedPeriod}Q`);
 	};
 
-	const deleteEditingRecord = (index: number) => {
-		setEditingRecords((prev) => prev.filter((_, i) => i !== index));
+	const deleteEditingRecord = (videoSec: number) => {
+		setEditingRecords((prev) => ({
+			...prev,
+			[selectedPeriod]: prev[selectedPeriod].filter((sec) => sec !== videoSec),
+		}));
 	};
 
 	const deleteConfirmedRecord = (index: number) => {
@@ -80,48 +79,40 @@ export function EditorView({
 	};
 
 	const confirmedRecords = records[selectedPeriod];
-	const allRecords = [...editingRecords, ...confirmedRecords];
+	const currentEditingRecords = editingRecords[selectedPeriod];
 
 	return (
-		<div className="flex flex-col gap-4 flex-1">
-			{/* 時間記録ボタン */}
-			<button
-				type="button"
-				className="w-full py-3.5 px-4 bg-emerald-500 text-white border-none rounded-lg cursor-pointer text-base font-bold transition-all duration-200 hover:bg-emerald-600 hover:-translate-y-px"
+		<div className="flex flex-1 flex-col gap-4">
+			<Button
 				onClick={captureTime}
+				className="w-full bg-emerald-500 py-3.5 text-base font-bold transition-all hover:-translate-y-px hover:bg-emerald-600"
 			>
 				⏱️ 時間を記録
-			</button>
+			</Button>
 
-			{/* レコードリスト */}
 			<div className="flex flex-col-reverse gap-2">
-				{allRecords.length === 0 ? (
-					<div className="text-center text-gray-400 py-8 px-4 text-sm">
+				{confirmedRecords.length === 0 && currentEditingRecords.length === 0 ? (
+					<div className="py-8 px-4 text-center text-sm text-gray-400">
 						まだ記録がありません
 						<br />
 						「時間を記録」ボタンで追加できます
 					</div>
 				) : (
 					<>
-						{/* 確定済みレコード */}
 						{confirmedRecords.map((record, index) => (
 							<RecordItem
-								key={`confirmed-${record.videoSec + index}`}
+								key={`confirmed-${record.videoSec}-${index}`}
 								record={record}
-								onUpdate={() => {}} // 確定済みは更新不可
-								onConfirm={() => {}} // 確定済みは再確定不可
 								onDelete={() => deleteConfirmedRecord(index)}
 								onTimeClick={() => handleTimeClick(record.videoSec)}
 							/>
 						))}
-						{/* 編集中レコード */}
-						{editingRecords.map((record, index) => (
-							<RecordItem
-								key={`editing-${record.videoSec + index}`}
-								record={record}
-								onUpdate={(updated) => updateEditingRecord(index, updated)}
-								onConfirm={(confirmed) => confirmRecord(index, confirmed)}
-								onDelete={() => deleteEditingRecord(index)}
+						{currentEditingRecords.map((videoSec) => (
+							<RecordForm
+								key={`editing-${videoSec}`}
+								initialVideoSec={videoSec}
+								onConfirm={(record) => confirmRecord(videoSec, record)}
+								onDelete={() => deleteEditingRecord(videoSec)}
 							/>
 						))}
 					</>

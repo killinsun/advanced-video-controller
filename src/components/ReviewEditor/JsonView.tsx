@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { GameReview } from "@/types/game-review";
 
 interface JsonViewProps {
@@ -13,7 +13,6 @@ export function JsonView({ gameReview, onImport }: JsonViewProps) {
 
 	const jsonString = JSON.stringify(gameReview, null, 2);
 
-	// gameReviewが更新されたらテキストボックスを更新
 	useEffect(() => {
 		setJsonText(jsonString);
 	}, [jsonString]);
@@ -35,12 +34,10 @@ export function JsonView({ gameReview, onImport }: JsonViewProps) {
 			const parsed = JSON.parse(jsonText);
 			console.log("[AVC Review] Parsed data:", parsed);
 
-			// 基本的なバリデーション
 			if (!parsed.periods || typeof parsed.periods !== "object") {
 				throw new Error("無効なフォーマット: periods が必要です");
 			}
 
-			// periodsの各要素が配列であることを確認
 			for (const period of ["1", "2", "3", "4"]) {
 				if (parsed.periods[period] && !Array.isArray(parsed.periods[period])) {
 					throw new Error(
@@ -62,7 +59,6 @@ export function JsonView({ gameReview, onImport }: JsonViewProps) {
 
 	return (
 		<div className="flex flex-col gap-2 h-full">
-			{/* ボタングループ */}
 			<div className="flex gap-2 justify-end">
 				<button
 					type="button"
@@ -83,10 +79,12 @@ export function JsonView({ gameReview, onImport }: JsonViewProps) {
 				</button>
 			</div>
 
-			{/* エラー表示 */}
-			{error && <div className="px-3 py-2 bg-red-100 text-red-800 rounded text-[11px]">{error}</div>}
+			{error && (
+				<div className="px-3 py-2 bg-red-100 text-red-800 rounded text-[11px]">
+					{error}
+				</div>
+			)}
 
-			{/* JSON編集エリア */}
 			<textarea
 				className="w-full flex-1 p-3 border border-gray-300 rounded-md text-xs font-mono resize-none box-border outline-none bg-gray-50"
 				value={jsonText}
