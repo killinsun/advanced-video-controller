@@ -1,15 +1,25 @@
 @import "tailwindcss";
 
-@theme {
-  --font-size-base: 16px;
-  --line-height-base: 1.5;
-  --font-size-sm: 1rem;
-  --font-size-xs: 0.875rem;
-}
+/*
+ * Shadow DOM内でホストページの font-size: 10px (1rem = 10px) の影響を補正
+ *
+ * 問題: Tailwindの --spacing 変数が 0.25rem として定義されているため、
+ * ホストページの 1rem = 10px の影響で --spacing = 2.5px になってしまう
+ *
+ * 解決策: --spacing を px 値で再定義する
+ */
 
-/* Shadow DOM用のベーススタイル調整 */
 :host,
-:root {
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-base);
+:root,
+#avc-review-react-root {
+  /* spacingをpx値で上書き（0.25rem × 16 = 4px） */
+  --spacing: 4px;
+
+  /* フォントサイズとテキスト関連もpx値で上書き */
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+
+  line-height: 1.5;
 }
