@@ -1,138 +1,19 @@
-import { type CSSProperties, useState } from "react";
+import { useState } from "react";
 import { useReviewStorage } from "@/hooks/useReviewStorage";
 import type { CommentRecord, GameReview, Period } from "@/types/game-review";
 import { EditorView } from "./EditorView";
 import { JsonView } from "./JsonView";
 
 interface ReviewSidebarProps {
-	player: any; // Video.js player
+	player: any;
 	onClose: () => void;
 }
-
-const styles = {
-	container: {
-		height: "100vh",
-		width: "100%",
-		backgroundColor: "white",
-		boxShadow: "-4px 0 16px rgba(0, 0, 0, 0.1)",
-		display: "flex",
-		flexDirection: "column",
-		gap: "8px",
-	} as CSSProperties,
-	header: {
-		display: "flex",
-		alignItems: "center",
-		justifyContent: "space-between",
-		padding: "8px 16px",
-		borderBottom: "1px solid #e5e7eb",
-	} as CSSProperties,
-	title: {
-		fontSize: "18px",
-		fontWeight: "bold",
-		color: "#1f2937",
-		margin: 0,
-	} as CSSProperties,
-	closeButton: {
-		background: "none",
-		border: "none",
-		fontSize: "28px",
-		lineHeight: "1",
-		width: "32px",
-		height: "32px",
-		display: "flex",
-		alignItems: "center",
-		justifyContent: "center",
-		cursor: "pointer",
-		color: "#6b7280",
-		transition: "color 0.2s",
-	} as CSSProperties,
-	tabContainer: {
-		display: "flex",
-		borderBottom: "1px solid #e5e7eb",
-	} as CSSProperties,
-	tab: {
-		flex: 1,
-		padding: "12px 0",
-		fontSize: "14px",
-		fontWeight: "500",
-		background: "none",
-		border: "none",
-		cursor: "pointer",
-		transition: "color 0.2s",
-		position: "relative",
-	} as CSSProperties,
-	tabActive: {
-		color: "#2563eb",
-	} as CSSProperties,
-	tabInactive: {
-		color: "#6b7280",
-	} as CSSProperties,
-	tabBorder: {
-		position: "absolute",
-		bottom: 0,
-		left: 0,
-		right: 0,
-		height: "2px",
-		backgroundColor: "#2563eb",
-	} as CSSProperties,
-	content: {
-		flex: 1,
-		overflowY: "auto",
-		padding: "16px",
-		display: "flex",
-		flexDirection: "column",
-		gap: "12px",
-		position: "relative",
-	} as CSSProperties,
-	periodTab: {
-		flex: 1,
-		padding: "12px",
-		fontSize: "14px",
-		fontWeight: "600",
-		background: "none",
-		border: "none",
-		cursor: "pointer",
-		transition: "color 0.2s",
-		position: "relative",
-	} as CSSProperties,
-	periodTabActive: {
-		color: "#2563eb",
-	} as CSSProperties,
-	periodTabInactive: {
-		color: "#6b7280",
-	} as CSSProperties,
-	switcher: {
-		display: "inline-flex",
-		backgroundColor: "#f3f4f6",
-		borderRadius: "4px",
-		padding: "2px",
-		gap: "2px",
-		alignSelf: "flex-end",
-	} as CSSProperties,
-	switcherButton: {
-		padding: "4px 10px",
-		fontSize: "11px",
-		fontWeight: "500",
-		border: "none",
-		borderRadius: "3px",
-		cursor: "pointer",
-		transition: "all 0.2s",
-		backgroundColor: "transparent",
-		color: "#6b7280",
-	} as CSSProperties,
-	switcherButtonActive: {
-		backgroundColor: "white",
-		color: "#374151",
-		boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
-	} as CSSProperties,
-};
 
 export function ReviewSidebar({ player, onClose }: ReviewSidebarProps) {
 	const [selectedPeriod, setSelectedPeriod] = useState<Period>("1");
 	const [viewMode, setViewMode] = useState<"editor" | "json">("editor");
 
-	const { records, setRecords, gameInfo, setGameInfo, isLoaded } =
-		useReviewStorage();
+	const { records, setRecords, gameInfo, setGameInfo } = useReviewStorage();
 
 	const gameReview: GameReview = {
 		...gameInfo,
@@ -164,99 +45,70 @@ export function ReviewSidebar({ player, onClose }: ReviewSidebarProps) {
 	};
 
 	return (
-		<div style={styles.container}>
-			{/* ヘッダー */}
-			<div style={styles.header}>
-				<h2 style={styles.title}>ゲームレビュー</h2>
-				<button
-					type="button"
-					onClick={onClose}
-					style={styles.closeButton}
-					aria-label="閉じる"
-					onMouseEnter={(e) => {
-						e.currentTarget.style.color = "#374151";
-					}}
-					onMouseLeave={(e) => {
-						e.currentTarget.style.color = "#6b7280";
-					}}
-				>
-					×
-				</button>
-			</div>
+		<div className="h-screen w-full bg-black p-2">
+			<div className="h-screen bg-gray-200 rounded-lg flex flex-col gap-2">
+				<div className="flex items-center justify-between px-4 py-2 border-b border-gray-200">
+					<h2 className="text-lg font-bold text-gray-800 m-0">
+						ゲームレビュー
+					</h2>
+				</div>
 
-			<div style={styles.switcher}>
-				<button
-					type="button"
-					style={{
-						...styles.switcherButton,
-						...(viewMode === "editor" ? styles.switcherButtonActive : {}),
-					}}
-					onClick={() => setViewMode("editor")}
-				>
-					📝 エディタ
-				</button>
-				<button
-					type="button"
-					style={{
-						...styles.switcherButton,
-						...(viewMode === "json" ? styles.switcherButtonActive : {}),
-					}}
-					onClick={() => setViewMode("json")}
-				>
-					📋 JSON
-				</button>
-			</div>
-
-			{/* クォータータブ */}
-			<div
-				style={{
-					...styles.tabContainer,
-					...(viewMode === "editor"
-						? { display: "flex" }
-						: { display: "none" }),
-				}}
-			>
-				{(["1", "2", "3", "4"] as Period[]).map((period) => (
+				<div className="inline-flex bg-gray-100 rounded px-0.5 py-0.5 gap-0.5 self-center">
 					<button
 						type="button"
-						key={period}
-						style={{
-							...styles.periodTab,
-							...(selectedPeriod === period
-								? styles.periodTabActive
-								: styles.periodTabInactive),
-						}}
-						onClick={() => setSelectedPeriod(period)}
-						onMouseEnter={(e) => {
-							if (selectedPeriod !== period) {
-								e.currentTarget.style.color = "#1f2937";
-							}
-						}}
-						onMouseLeave={(e) => {
-							if (selectedPeriod !== period) {
-								e.currentTarget.style.color = "#6b7280";
-							}
-						}}
+						className={`
+						px-2.5 py-1 text-[11px] font-medium border-none rounded-[3px] cursor-pointer transition-all duration-200
+						${viewMode === "editor" ? "bg-white text-gray-700 shadow-sm" : "bg-transparent text-gray-500"}
+					`}
+						onClick={() => setViewMode("editor")}
 					>
-						{period}Q
-						{selectedPeriod === period && <div style={styles.tabBorder} />}
+						📝 エディタ
 					</button>
-				))}
-			</div>
+					<button
+						type="button"
+						className={`
+						px-2.5 py-1 text-[11px] font-medium border-none rounded-[3px] cursor-pointer transition-all duration-200
+						${viewMode === "json" ? "bg-white text-gray-700 shadow-sm" : "bg-transparent text-gray-500"}
+					`}
+						onClick={() => setViewMode("json")}
+					>
+						📋 JSON
+					</button>
+				</div>
 
-			{/* コンテンツエリア */}
-			<div style={styles.content}>
-				{/* コンテンツ */}
-				{viewMode === "editor" ? (
-					<EditorView
-						player={player}
-						selectedPeriod={selectedPeriod}
-						records={records}
-						setRecords={setRecords}
-					/>
-				) : (
-					<JsonView gameReview={gameReview} onImport={handleImport} />
-				)}
+				<div
+					className={`flex border-b border-gray-200 ${viewMode === "editor" ? "block" : "hidden"}`}
+				>
+					{(["1", "2", "3", "4"] as Period[]).map((period) => (
+						<button
+							type="button"
+							key={period}
+							className={`
+							flex-1 py-3 px-3 text-sm font-semibold bg-transparent border-none cursor-pointer transition-colors duration-200 relative
+							${selectedPeriod === period ? "text-blue-600" : "text-gray-500 hover:text-gray-800"}
+						`}
+							onClick={() => setSelectedPeriod(period)}
+						>
+							{period}Q
+							{selectedPeriod === period && (
+								<div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />
+							)}
+						</button>
+					))}
+				</div>
+
+				<div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 relative">
+					{viewMode === "editor" ? (
+						<EditorView
+							player={player}
+							selectedPeriod={selectedPeriod}
+							records={records}
+							setRecords={setRecords}
+						/>
+					) : (
+						<JsonView gameReview={gameReview} onImport={handleImport} />
+					)}
+				</div>
 			</div>
 		</div>
 	);

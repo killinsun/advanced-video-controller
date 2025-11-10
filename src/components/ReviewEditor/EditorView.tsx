@@ -1,51 +1,15 @@
-import {
-	type CSSProperties,
-	type Dispatch,
-	type SetStateAction,
-	useState,
-} from "react";
+import { type Dispatch, type SetStateAction, useState } from "react";
+import { Button } from "@/components/ui/Button";
 import type { CommentRecord, Period } from "@/types/game-review";
 import { RecordForm } from "./RecordForm";
 import { RecordItem } from "./RecordItem";
 
 interface EditorViewProps {
-	player: any; // Video.js player
+	player: any;
 	selectedPeriod: Period;
 	records: Record<Period, CommentRecord[]>;
 	setRecords: Dispatch<SetStateAction<Record<Period, CommentRecord[]>>>;
 }
-
-const styles = {
-	container: {
-		display: "flex",
-		flexDirection: "column",
-		gap: "16px",
-		flex: 1,
-	} as CSSProperties,
-	captureButton: {
-		width: "100%",
-		padding: "14px",
-		backgroundColor: "#10b981",
-		color: "white",
-		border: "none",
-		borderRadius: "8px",
-		cursor: "pointer",
-		fontSize: "16px",
-		fontWeight: "bold",
-		transition: "all 0.2s",
-	} as CSSProperties,
-	recordsList: {
-		display: "flex",
-		flexDirection: "column-reverse",
-		gap: "8px",
-	} as CSSProperties,
-	emptyState: {
-		textAlign: "center",
-		color: "#9ca3af",
-		padding: "32px 16px",
-		fontSize: "14px",
-	} as CSSProperties,
-};
 
 export function EditorView({
 	player,
@@ -118,26 +82,17 @@ export function EditorView({
 	const currentEditingRecords = editingRecords[selectedPeriod];
 
 	return (
-		<div style={styles.container}>
-			<button
-				type="button"
-				style={styles.captureButton}
+		<div className="flex flex-1 flex-col gap-4">
+			<Button
 				onClick={captureTime}
-				onMouseEnter={(e) => {
-					e.currentTarget.style.backgroundColor = "#059669";
-					e.currentTarget.style.transform = "translateY(-1px)";
-				}}
-				onMouseLeave={(e) => {
-					e.currentTarget.style.backgroundColor = "#10b981";
-					e.currentTarget.style.transform = "translateY(0)";
-				}}
+				className="w-full text-white bg-black text-base font-bold transition-all hover:-translate-y-px hover:bg-gray-800"
 			>
-				⏱️ 時間を記録
-			</button>
+				メモを追加
+			</Button>
 
-			<div style={styles.recordsList}>
+			<div className="flex flex-col-reverse gap-2">
 				{confirmedRecords.length === 0 && currentEditingRecords.length === 0 ? (
-					<div style={styles.emptyState}>
+					<div className="py-8 px-4 text-center text-sm text-gray-400">
 						まだ記録がありません
 						<br />
 						「時間を記録」ボタンで追加できます

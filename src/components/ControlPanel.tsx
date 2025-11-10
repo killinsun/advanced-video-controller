@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import type { FrameController } from "@/utils/frame-controller";
 import { parseTimeString } from "@/utils/time-parser";
+import { Button } from "./ui/Button";
 
 interface ControlPanelProps {
 	controller: FrameController;
@@ -24,42 +25,8 @@ export function ControlPanel({ controller, initialTime }: ControlPanelProps) {
 
 		return () => clearInterval(interval);
 	}, [controller]);
-	const buttonStyle: React.CSSProperties = {
-		padding: "8px 16px",
-		margin: "0 4px",
-		backgroundColor: "#333",
-		color: "#fff",
-		border: "1px solid #555",
-		borderRadius: "8px",
-		cursor: "pointer",
-		fontSize: "14px",
-		fontWeight: "bold",
-	};
 
-	const containerStyle: React.CSSProperties = {
-		display: "flex",
-		alignItems: "center",
-		gap: "8px",
-		padding: "8px",
-		backgroundColor: "rgba(0, 0, 0, 0.7)",
-		borderRadius: "16px",
-		marginTop: "8px",
-	};
 
-	const inputStyle: React.CSSProperties = {
-		padding: "8px 12px",
-		backgroundColor: "#222",
-		color: "#fff",
-		border: "1px solid #555",
-		borderRadius: "8px",
-		fontSize: "14px",
-		width: "100px",
-	};
-
-	const jumpButtonStyle: React.CSSProperties = {
-		...buttonStyle,
-		backgroundColor: "#1a5490",
-	};
 
 	const handleJumpTo = () => {
 		const seconds = parseTimeString(timeInput);
@@ -79,79 +46,53 @@ export function ControlPanel({ controller, initialTime }: ControlPanelProps) {
 
 	return (
 		<div className="wrapper">
-			<div style={containerStyle}>
-				<button
+			<div className="flex items-center gap-2 p-2 bg-black/70 rounded-2xl mt-2">
+				<Button
 					type="button"
-					style={buttonStyle}
 					onClick={() => controller.togglePlayPause()}
-					onMouseEnter={(e) => {
-						e.currentTarget.style.backgroundColor = "#444";
-					}}
-					onMouseLeave={(e) => {
-						e.currentTarget.style.backgroundColor = "#333";
-					}}
 					title={isPaused ? "再生" : "一時停止"}
 				>
 					{isPaused ? "▶" : "⏸"}
-				</button>
+				</Button>
 
-				<span style={{ color: "#888", fontSize: "14px" }}>|</span>
+				<span className="text-gray-500 text-sm">|</span>
 
-				<button
+				<Button
 					type="button"
-					style={buttonStyle}
+					variant="outline"
 					onClick={() => controller.skip(-1)}
-					onMouseEnter={(e) => {
-						e.currentTarget.style.backgroundColor = "#444";
-					}}
-					onMouseLeave={(e) => {
-						e.currentTarget.style.backgroundColor = "#333";
-					}}
 				>
 					-1
-				</button>
+				</Button>
 
-				<button
+				<Button
 					type="button"
-					style={buttonStyle}
 					onClick={() => controller.skip(1)}
-					onMouseEnter={(e) => {
-						e.currentTarget.style.backgroundColor = "#444";
-					}}
-					onMouseLeave={(e) => {
-						e.currentTarget.style.backgroundColor = "#333";
-					}}
 				>
 					+1
-				</button>
+				</Button>
 
-				<span style={{ color: "#888", fontSize: "14px" }}>|</span>
+				<span className="text-gray-500 text-sm">|</span>
 
 				<input
 					type="text"
-					style={inputStyle}
+					className="px-3 py-2 bg-[#222] text-white border border-gray-600 rounded-lg text-sm w-[100px]"
 					placeholder="1:30"
 					value={timeInput}
 					onChange={(e) => setTimeInput(e.target.value)}
 					onKeyPress={handleKeyPress}
 				/>
 
-				<button
+				<Button
 					type="button"
-					style={jumpButtonStyle}
+					variant="outline"
 					onClick={handleJumpTo}
-					onMouseEnter={(e) => {
-						e.currentTarget.style.backgroundColor = "#2563a8";
-					}}
-					onMouseLeave={(e) => {
-						e.currentTarget.style.backgroundColor = "#1a5490";
-					}}
 				>
 					移動
-				</button>
+				</Button>
 			</div>
 			{errorText && (
-				<p style={{ color: "#f00", fontSize: "12px", marginTop: "4px" }}>
+				<p className="text-red-500 text-xs mt-1">
 					{errorText}
 				</p>
 			)}
