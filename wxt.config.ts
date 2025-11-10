@@ -5,7 +5,7 @@ import path from "node:path";
 // See https://wxt.dev/api/config.html
 export default defineConfig({
 	manifest: {
-		version: "0.2.2",
+		version: "0.3.0",
 		permissions: ["storage"],
 	},
 	modules: ["@wxt-dev/module-react"],
@@ -14,8 +14,8 @@ export default defineConfig({
 		resolve: {
 			alias: {
 				"@": path.resolve(__dirname, "src"),
-			}
-		}
+			},
+		},
 	}),
 	srcDir: "src",
 	outDir: "output",

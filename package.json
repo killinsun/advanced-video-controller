@@ -2,7 +2,7 @@
 	"name": "AVC - Advanced Video Controller",
 	"description": "Advanced Video Controller for Softbank Basketball Live",
 	"private": true,
-	"version": "0.2.2",
+	"version": "0.3.0",
 	"type": "module",
 	"scripts": {
 		"dev": "wxt",
