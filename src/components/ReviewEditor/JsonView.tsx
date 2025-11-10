@@ -11,6 +11,7 @@ interface JsonViewProps {
 
 export function JsonView({ gameReview, onImport }: JsonViewProps) {
 	const [copied, setCopied] = useState(false);
+	const [restored, setRestored] = useState(false);
 	const [error, setError] = useState("");
 	const [jsonText, setJsonText] = useState("");
 
@@ -48,31 +49,42 @@ export function JsonView({ gameReview, onImport }: JsonViewProps) {
 					);
 				}
 			}
+			setRestored(true);
 
 			console.log("[AVC Review] Calling onImport with:", parsed);
 			onImport(parsed as GameReview);
 			console.log("[AVC Review] Data imported successfully");
+			setTimeout(() => setRestored(false), 2000);
 		} catch (err) {
 			const errorMessage =
 				err instanceof Error ? err.message : "JSONのパースに失敗しました";
 			setError(errorMessage);
 			console.error("[AVC Review] Import failed:", err);
+			setRestored(false);
 		}
 	};
 
 	return (
 		<div className="flex flex-col gap-2 h-full">
+			<p>
+				JSONデータを貼り付けて「復元」を押すと、ゲームレビューが復元されます。
+			</p>
 			<div className="flex gap-2 justify-end">
 				<Button
-					variant="outline"
 					size="sm"
 					onClick={copyToClipboard}
-					className={copied ? "border-emerald-500 text-emerald-500" : ""}
+					className={`
+						${copied ? "border-emerald-500 text-emerald-500" : ""}`}
 				>
 					{copied ? "✓ コピー済み" : "コピー"}
 				</Button>
-				<Button variant="outline" size="sm" onClick={handleImport}>
-					復元
+				<Button
+					size="sm"
+					onClick={handleImport}
+					className={`
+					${restored ? "border-emerald-500 text-emerald-500" : ""}`}
+				>
+					{restored ? "✓ 復元済み" : "復元"}
 				</Button>
 			</div>
 

@@ -42,7 +42,7 @@ export function RecordForm({
 	};
 
 	return (
-		<div className="flex flex-col gap-2 rounded-md border border-gray-200 bg-gray-50 p-3">
+		<div className="flex flex-col gap-2 rounded-md bg-white p-3">
 			<div className="flex items-center justify-between">
 				<div className="font-mono text-sm font-semibold text-gray-700">
 					{formatTime(initialVideoSec)}
@@ -59,7 +59,7 @@ export function RecordForm({
 
 			<Textarea
 				autoFocus
-				className="min-h-[60px] resize-y"
+				className="min-h-[60px] resize-y bg-white border-solid border-gray-200"
 				placeholder="コメントを入力..."
 				value={comment}
 				onChange={(e) => setComment(e.target.value)}
@@ -72,7 +72,7 @@ export function RecordForm({
 				<Input
 					type="text"
 					id="restGameClock"
-					className="font-mono text-sm"
+					className="font-mono text-sm bg-white border-solid border-gray-200"
 					placeholder="例: 08:45"
 					value={restGameClock}
 					onChange={handleClockChange}
@@ -84,7 +84,7 @@ export function RecordForm({
 					variant="outline"
 					size="default"
 					onClick={() => handleHomeAwayClick("HOME")}
-					className="flex-1 border-2 font-semibold hover:bg-blue-500 hover:text-white hover:border-blue-500"
+					className="flex-1 border-2 font-semibold bg-gray-200 hover:bg-gray-400 hover:text-white"
 				>
 					HOME
 				</Button>
@@ -92,7 +92,7 @@ export function RecordForm({
 					variant="outline"
 					size="default"
 					onClick={() => handleHomeAwayClick("AWAY")}
-					className="flex-1 border-2 font-semibold hover:bg-red-500 hover:text-white hover:border-red-500"
+					className="flex-1 border-2 font-semibold bg-gray-200 hover:bg-gray-400 hover:text-white"
 				>
 					AWAY
 				</Button>

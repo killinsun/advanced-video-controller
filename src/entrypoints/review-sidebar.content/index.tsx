@@ -13,38 +13,48 @@ interface ReviewAppProps {
 }
 
 function ReviewApp({ player }: ReviewAppProps) {
-	const [isVisible, setIsVisible] = useState(true);
+	const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
 	return (
 		<>
 			{/* トグルボタン */}
 			<Button
 				variant="outline"
-				onClick={() => setIsVisible(!isVisible)}
+				onClick={() => setIsSidebarOpen(!isSidebarOpen)}
 				className={`
-					${isVisible ? "hidden" : "block"}
+					${isSidebarOpen ? "right-[360px]" : "right-[-15px]"}
 					fixed bottom-5 z-[9999]
-					${isVisible ? "right-[404px]" : "right-5"}
-					px-5 py-2
-					bg-blue-500 text-white
-					rounded-lg shadow-md
-					text-sm font-semibold
-					hover:bg-blue-600 hover:-translate-y-0.5 hover:shadow-lg
+					top-[50%]
+					bg-gray-200
+					rounded-full
+					hover:bg-white
+					hover:-translate-y-0.5 hover:shadow-lg
 					transition-all duration-300
-					cursor-pointer
 				`}
 			>
-				{isVisible ? "📝" : "レビューを開く"}
+				<span
+					className={`text-sm
+					transition-all duration-300
+					font-bold
+					${isSidebarOpen ? "rotate-0" : "rotate-180"}
+				`}
+				>
+					&gt;
+				</span>
 			</Button>
 
 			{/* サイドバー */}
 			<div
 				className={`
-					${isVisible ? "w-[384px]" : "w-0"}
+					${isSidebarOpen ? "w-[384px]" : "w-0"}
 					flex-shrink-0
+					transition-all duration-300
 				`}
 			>
-				<ReviewSidebar player={player} onClose={() => setIsVisible(false)} />
+				<ReviewSidebar
+					player={player}
+					onClose={() => setIsSidebarOpen(false)}
+				/>
 			</div>
 		</>
 	);

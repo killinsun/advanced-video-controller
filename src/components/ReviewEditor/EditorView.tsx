@@ -85,9 +85,9 @@ export function EditorView({
 		<div className="flex flex-1 flex-col gap-4">
 			<Button
 				onClick={captureTime}
-				className="w-full bg-emerald-500 py-3.5 text-base font-bold transition-all hover:-translate-y-px hover:bg-emerald-600"
+				className="w-full text-white bg-black text-base font-bold transition-all hover:-translate-y-px hover:bg-gray-800"
 			>
-				⏱️ 時間を記録
+				メモを追加
 			</Button>
 
 			<div className="flex flex-col-reverse gap-2">

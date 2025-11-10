@@ -16,16 +16,17 @@ export function RecordItem({ record, onDelete, onTimeClick }: RecordItemProps) {
 	};
 
 	return (
-		<div className="flex flex-col gap-2 rounded-md border border-gray-200 bg-gray-50 p-3">
+		<div className="flex flex-col gap-2 rounded-md border border-gray-200 bg-white p-3">
 			<div className="flex items-center justify-between">
 				<div className="flex items-center gap-2">
-					<button
-						type="button"
-						className="font-mono text-sm font-semibold text-gray-700 transition-colors hover:text-blue-600"
+					<Button
+						variant="destructive"
+						size="sm"
+						className="font-semibold text-gray-700 transition-colors hover:text-blue-600 px-0 py-1"
 						onClick={onTimeClick}
 					>
 						{formatTime(record.videoSec)}
-					</button>
+					</Button>
 					<Badge
 						variant={record.homeAway === "HOME" ? "default" : "destructive"}
 						className="text-xs font-semibold"
