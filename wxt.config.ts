@@ -5,7 +5,7 @@ import path from "node:path";
 // See https://wxt.dev/api/config.html
 export default defineConfig({
 	manifest: {
-		version: "0.3.0",
+		version: "0.3.1",
 		permissions: ["storage"],
 	},
 	modules: ["@wxt-dev/module-react"],

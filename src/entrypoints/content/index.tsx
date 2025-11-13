@@ -103,12 +103,23 @@ function mountControlPanel(
 function setupKeyboardShortcuts(frameController: FrameController): void {
 	document.addEventListener("keydown", (e: KeyboardEvent) => {
 		// input/textarea要素にフォーカスがある場合は無効
-		const target = e.target as HTMLElement;
+		// composedPath()を使用してShadow DOM内の要素も確実にチェック
+		const path = e.composedPath();
+		const target = path[0] as HTMLElement;
 		if (
 			target.tagName === "INPUT" ||
 			target.tagName === "TEXTAREA" ||
 			target.isContentEditable
 		) {
+			// 一部のキーは再生を止めてしまうので、動画プレイヤーに伝播しないようにする
+			if (
+				e.key === " " ||
+				e.code === "Space" ||
+				e.key === "k" ||
+				e.code === "KeyK"
+			) {
+				e.stopPropagation();
+			}
 			return;
 		}
 
